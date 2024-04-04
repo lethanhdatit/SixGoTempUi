@@ -11,6 +11,7 @@ function App() {
   const frontEndCallback = "http://localhost:3000";
 
   const [socialSigninData, setSocialSigninData] = useState<any>();
+  const [locationResult, setLocationResult] = useState<any>();
   const [district, setDistrict] = useState<string>(
     "Thu duc, Ho Chi Minh city, Vietnam"
   );
@@ -57,9 +58,6 @@ function App() {
   };
 
   const buildLocationUrl = () => {
-    // Generate random security salt and store this
-    sessionSalt = uuidv4();
-
     const callbackUrl = new URL(frontEndCallback);
     callbackUrl.searchParams.append("sessionSalt", sessionSalt);
 
@@ -70,7 +68,7 @@ function App() {
     url.searchParams.append("address", district);
     url.searchParams.append("accessToken", socialSigninData?.accessToken);
     url.searchParams.append("returnUrl", callbackUrl.toString());
-    
+
     return url.toString();
   };
 
@@ -84,7 +82,7 @@ function App() {
 
     // Build backend url
     const url = new URL(
-      `${backendHost}/api/v1/external/signin/${provider}/challenge`
+      `${backendHost}/id/v1/external/signin/${provider}/challenge`
     );
     url.searchParams.append("returnUrl", callbackUrl.toString());
 
@@ -101,11 +99,10 @@ function App() {
     ) {
       switch (event.data.action) {
         case "SocialSignin":
-          // authenticated data
           setSocialSigninData(event.data.result);
           break;
         case "LocationVerification":
-          console.log(event.data.result);
+          setLocationResult(event.data.result);
           break;
         default:
           break;
@@ -113,6 +110,7 @@ function App() {
     } else {
       console.log("Avoid unknown message post");
       setSocialSigninData(undefined);
+      setLocationResult(undefined);
     }
   };
 
@@ -176,11 +174,19 @@ function App() {
             defaultValue={district}
           />
           <span> - </span>
-          <button onClick={() => setVisualizeLoading(!visualizeLoading)}>
+          <button
+            onClick={() => {
+              sessionSalt = uuidv4();
+              setVisualizeLoading(!visualizeLoading);
+            }}
+          >
             Visualize
           </button>
         </div>
-
+        <div>
+          <b>Result: </b>
+          <span>{JSON.stringify(locationResult)}</span>
+        </div>
         <h4>Visualized:</h4>
         <div>
           {!visualizeLoading && socialSigninData?.accessToken && (
@@ -190,7 +196,7 @@ function App() {
               id="map"
               allow="geolocation *;"
               src={buildLocationUrl()}
-            ></iframe>
+            />
           )}
         </div>
       </div>
