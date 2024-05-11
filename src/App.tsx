@@ -2,21 +2,23 @@ import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { v4 as uuidv4 } from "uuid";
+import FileUploader from './FileUploader'
 
 let sessionSalt = "";
 
 function App() {
-  let popup = null as any;
-  const backendHost = "https://localhost:7104";
+  const backendIdHost = "https://localhost:7104";
+  const backendApiHost = "https://localhost:7081";
   const frontEndCallback = "http://localhost:3000";
 
   const [socialSigninData, setSocialSigninData] = useState<any>();
+
   const [locationResult, setLocationResult] = useState<any>();
   const [district, setDistrict] = useState<string>(
     "Thu duc, Ho Chi Minh city, Vietnam"
   );
-  const [visualizeLoading, setVisualizeLoading] = useState<boolean>(true);
-
+  const [visualization, setVisualization] = useState<boolean>(false);
+  const [requestMap, setRequestMap] = useState<any>();
   const [position, setPosition] = useState<{
     latitude: Number | null;
     longitude: Number | null;
@@ -57,19 +59,33 @@ function App() {
     }
   };
 
-  const buildLocationUrl = () => {
-    const callbackUrl = new URL(frontEndCallback);
-    callbackUrl.searchParams.append("sessionSalt", sessionSalt);
-
-    const url = new URL(`${backendHost}/external/google/location`);
-
-    url.searchParams.append("ulat", `${position?.latitude}`);
-    url.searchParams.append("ulng", `${position?.longitude}`);
-    url.searchParams.append("address", district);
-    url.searchParams.append("accessToken", socialSigninData?.accessToken);
-    url.searchParams.append("returnUrl", callbackUrl.toString());
-
-    return url.toString();
+  const visualizeGoogleMap = () => {
+    fetch(
+      `${backendIdHost}/id/v1/external/google/maps/locations/visualization`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${socialSigninData?.accessToken}`,
+        },
+        body: JSON.stringify({
+          data: {
+            address: district,
+            userPosition: {
+              lat: position?.latitude,
+              lng: position?.longitude,
+            }
+          }
+        }),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setRequestMap(data.data);
+        setVisualization(true);
+        sessionSalt = data.data.security;
+      })
+      .catch((e) => alert("Unauthorized"));
   };
 
   const socialSignin = (provider: string) => {
@@ -78,39 +94,38 @@ function App() {
 
     // Build callback url
     const callbackUrl = new URL(frontEndCallback);
-    callbackUrl.searchParams.append("sessionSalt", sessionSalt);
+    callbackUrl.searchParams.append("security", sessionSalt);
 
     // Build backend url
     const url = new URL(
-      `${backendHost}/id/v1/external/signin/${provider}/challenge`
+      `${backendIdHost}/id/v1/external/${provider}/signin/challenge`
     );
     url.searchParams.append("returnUrl", callbackUrl.toString());
 
     // Start flow in popup
-    popup = window.open(url, "_blank", "width=800,height=600,left=200,top=200");
+    window.open(url, "_blank", "width=800,height=600,left=200,top=200");
   };
 
   // Handle callback response
   const receiveMessage = (event: any) => {
     // security check
-    if (
-      event.origin === backendHost &&
-      event.data.sessionSalt === sessionSalt
-    ) {
-      switch (event.data.action) {
-        case "SocialSignin":
-          setSocialSigninData(event.data.result);
-          break;
-        case "LocationVerification":
-          setLocationResult(event.data.result);
-          break;
-        default:
-          break;
+    if (event.origin === backendIdHost) {
+      if (event.data.security === sessionSalt) {
+        switch (event.data.action) {
+          case "SocialSignin":
+            setSocialSigninData(event.data.result);
+            break;
+          case "ResidenceVerification":
+            setLocationResult(event.data.result);
+            break;
+          default:
+            break;
+        }
+      } else {
+        console.log("Avoid unknown message post");
+        setSocialSigninData(undefined);
+        setLocationResult(undefined);
       }
-    } else {
-      console.log("Avoid unknown message post");
-      setSocialSigninData(undefined);
-      setLocationResult(undefined);
     }
   };
 
@@ -129,6 +144,8 @@ function App() {
             <button onClick={() => socialSignin("naver")}>Naver</button>
           </div>
         </header>
+        <br />
+        { socialSigninData?.accessToken && <FileUploader accessToken={socialSigninData.accessToken}/>} 
         <br />
         <div className="result">
           <p>
@@ -168,20 +185,13 @@ function App() {
           <input
             style={{ width: "50%" }}
             onKeyUp={(e: any) => {
-              setVisualizeLoading(true);
               setDistrict(e.target.value);
+              setVisualization(false);
             }}
             defaultValue={district}
           />
           <span> - </span>
-          <button
-            onClick={() => {
-              sessionSalt = uuidv4();
-              setVisualizeLoading(!visualizeLoading);
-            }}
-          >
-            Visualize
-          </button>
+          <button onClick={() => visualizeGoogleMap()}>Visualize</button>
         </div>
         <div>
           <b>Result: </b>
@@ -189,13 +199,13 @@ function App() {
         </div>
         <h4>Visualized:</h4>
         <div>
-          {!visualizeLoading && socialSigninData?.accessToken && (
+          {visualization && requestMap?.mapUrl && (
             <iframe
               style={{ width: "450px", height: "450px" }}
               title="map"
               id="map"
-              allow="geolocation *;"
-              src={buildLocationUrl()}
+              // allow="geolocation *;"
+              src={requestMap.mapUrl}
             />
           )}
         </div>
