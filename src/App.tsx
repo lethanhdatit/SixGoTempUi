@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 let sessionSalt = "";
 
 function App() {
-  const backendIdHost = "https://192.168.1.4:8104";
+  const backendIdHost = "https://192.168.1.13:8104";
   const frontEndCallback = "http://localhost:3000";
 
   const [socialSigninData, setSocialSigninData] = useState<any>();
