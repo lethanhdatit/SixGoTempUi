@@ -33,7 +33,7 @@ const server = https.createServer({
 
 // Listen on port 7104
 server.listen(7104, () => {
-  console.log('Proxy server is running on https://localhost:7104');
+  console.log(`Proxy server is running on ${targetHost}`);
 });
 
 // Set the NODE_TLS_REJECT_UNAUTHORIZED environment variable to 0
