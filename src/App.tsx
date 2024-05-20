@@ -2,13 +2,11 @@ import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { v4 as uuidv4 } from "uuid";
-import FileUploader from './FileUploader'
 
 let sessionSalt = "";
 
 function App() {
-  const backendIdHost = "https://localhost:7104";
-  const backendApiHost = "https://localhost:7081";
+  const backendIdHost = "https://192.168.1.4:8104";
   const frontEndCallback = "http://localhost:3000";
 
   const [socialSigninData, setSocialSigninData] = useState<any>();
@@ -100,7 +98,7 @@ function App() {
     const url = new URL(
       `${backendIdHost}/id/v1/external/${provider}/signin/challenge`
     );
-    url.searchParams.append("returnUrl", callbackUrl.toString());
+    url.searchParams.append("callBackUrl", callbackUrl.toString());
 
     // Start flow in popup
     window.open(url, "_blank", "width=800,height=600,left=200,top=200");
@@ -109,23 +107,21 @@ function App() {
   // Handle callback response
   const receiveMessage = (event: any) => {
     // security check
-    if (event.origin === backendIdHost) {
-      if (event.data.security === sessionSalt) {
-        switch (event.data.action) {
-          case "SocialSignin":
-            setSocialSigninData(event.data.result);
-            break;
-          case "ResidenceVerification":
-            setLocationResult(event.data.result);
-            break;
-          default:
-            break;
-        }
-      } else {
-        console.log("Avoid unknown message post");
-        setSocialSigninData(undefined);
-        setLocationResult(undefined);
+    if (event.data.security === sessionSalt) {
+      switch (event.data.action) {
+        case "SocialSignin":
+          setSocialSigninData(event.data.result);
+          break;
+        case "ResidenceVerification":
+          setLocationResult(event.data.result);
+          break;
+        default:
+          break;
       }
+    } else {
+      console.log("Avoid unknown message post");
+      setSocialSigninData(undefined);
+      setLocationResult(undefined);
     }
   };
 
@@ -145,7 +141,6 @@ function App() {
           </div>
         </header>
         <br />
-        { socialSigninData?.accessToken && <FileUploader accessToken={socialSigninData.accessToken}/>} 
         <br />
         <div className="result">
           <p>
