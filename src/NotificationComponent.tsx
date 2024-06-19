@@ -17,7 +17,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({
   const connect = () => {
     if (accessToken) {
       if (!connection) {
-        const url = "https://localhost:7263/realtime/notificationHub";
+        const url = "https://192.168.1.224:8086/realtime/notificationHub";
 
         // Create a new SignalR connection
         const newConnection = new signalR.HubConnectionBuilder()

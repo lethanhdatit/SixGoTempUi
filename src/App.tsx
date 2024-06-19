@@ -3,12 +3,12 @@ import logo from "./logo.svg";
 import "./App.css";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import NotificationComponent from "./NotificationComponent"
-import FileUploader from "./FileUploader"
+import NotificationComponent from "./NotificationComponent";
+import FileUploader from "./FileUploader";
 let sessionSalt = "";
 
 function App() {
-  const backendIdHost = "https://localhost:7104";
+  const backendIdHost = "https://192.168.1.224:8104";
   const frontEndCallback = "http://localhost:3000";
 
   const [socialSigninData, setSocialSigninData] = useState<any>();
@@ -74,8 +74,8 @@ function App() {
             userPosition: {
               lat: position?.latitude,
               lng: position?.longitude,
-            }
-          }
+            },
+          },
         }),
       }
     )
@@ -109,21 +109,15 @@ function App() {
   // Handle callback response
   const receiveMessage = (event: any) => {
     // security check
-    if (event.data.security === sessionSalt) {
-      switch (event.data.action) {
-        case "SocialSignin":
-          setSocialSigninData(event.data.result);
-          break;
-        case "ResidenceVerification":
-          setLocationResult(event.data.result);
-          break;
-        default:
-          break;
-      }
-    } else {
-      console.log("Avoid unknown message post");
-      setSocialSigninData(undefined);
-      setLocationResult(undefined);
+    switch (event.data.action) {
+      case "SocialSignin":
+        setSocialSigninData(event.data.result);
+        break;
+      case "ResidenceVerification":
+        setLocationResult(event.data.result);
+        break;
+      default:
+        break;
     }
   };
 
@@ -144,7 +138,9 @@ function App() {
         </header>
         <br />
         <br />
-        {socialSigninData?.accessToken && <NotificationComponent accessToken={socialSigninData.accessToken}/>}
+        {socialSigninData?.accessToken && (
+          <NotificationComponent accessToken={socialSigninData.accessToken} />
+        )}
         <FileUploader accessToken={socialSigninData?.accessToken} />
         {/* {<NotificationComponent accessToken={socialSigninData?.accessToken}/>} */}
         <div className="result">
