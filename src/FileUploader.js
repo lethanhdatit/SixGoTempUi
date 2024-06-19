@@ -94,66 +94,27 @@ function FileUploader({ accessToken }) {
     //   },
     // };
 
-    const url = "https://localhost:7081/api/v1/profile/additional";
+    const url = "https://localhost:7081/api/v1/products/classes/basic";
     const method = "POST";
     var json = {
       Data: {
-        EducationItems: [
+        FinalLevelCategoryCode: 'CTG11100000001',
+        Name: "test",
+        ProductTypeCode: 'PRCTG110000002',
+        LangCodes: ['vie', 'eng'],
+        Images:[
           {
-            Id: "c94f024e-eec9-4fb2-b2ec-4715e3084865",
-            CountryCode: "VNM",
-            UniversityName: "Test",
-            MajorName: "Information Technology",
-            DisplayOrder: 1,
-            Files: [
-              {
-                "id": "6c70410e-8001-4373-9438-08ea7ccccf76",
-                DisplayOrder: 888,
-                File: files[0]
-              },
-            ],
+            File: files[0],
+            DisplayOrder: 0
           },
           {
-            Id: "e9df3292-3993-434b-afa1-93363a770205",
-            CountryCode: "KOR",
-            UniversityName: "Korean University",
-            MajorName: "Korean Information Technology",
-            DisplayOrder: 2,
-            Files: [
-              {
-                "id": "33b55aeb-4850-421e-96f5-cf2b6f191fb4",
-                DisplayOrder: 2,
-                File: files[1]
-              },
-            ],
-          }
-        ],
-        CertificateItems: [
-          {
-            "id": "5a8729c5-8e03-4777-a443-92f5972120c7",
-            CertificateName: "Siêu cấp víp rồ",
-            CertificateIssuer: "Tự Chế",
-            DisplayOrder: 3,
-            Files: [
-              {
-                "id": "7e625b5c-815c-47cf-b1b8-8d48c22322fd",
-                DisplayOrder: 1,
-                File: files[1]
-              },
-            ],
-          }
-        ],
-        Blog:  {
-          "id": "3e0edee8-c2b7-4ec4-8bce-f65baa7242f8",
-            Url: "link blog 99999",
-            DisplayOrder: 9999
+            File: files[0],
+            DisplayOrder: 1
           },
-        SNS: [
-        {
-          "id": "8b39ff33-ae2c-437a-8a50-eeea29590660",
-            Url: "link sns 8888",
-            DisplayOrder: 888888,
-           }
+          {
+            File: files[0],
+            DisplayOrder: 2
+          }
         ]
       },
     };

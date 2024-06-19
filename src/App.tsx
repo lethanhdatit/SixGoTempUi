@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { v4 as uuidv4 } from "uuid";
-
+import axios from "axios";
+import NotificationComponent from "./NotificationComponent"
+import FileUploader from "./FileUploader"
 let sessionSalt = "";
 
 function App() {
-  const backendIdHost = "https://192.168.1.13:8104";
+  const backendIdHost = "https://localhost:7104";
   const frontEndCallback = "http://localhost:3000";
 
   const [socialSigninData, setSocialSigninData] = useState<any>();
@@ -142,6 +144,9 @@ function App() {
         </header>
         <br />
         <br />
+        {socialSigninData?.accessToken && <NotificationComponent accessToken={socialSigninData.accessToken}/>}
+        <FileUploader accessToken={socialSigninData?.accessToken} />
+        {/* {<NotificationComponent accessToken={socialSigninData?.accessToken}/>} */}
         <div className="result">
           <p>
             <span>
