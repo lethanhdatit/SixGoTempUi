@@ -8,7 +8,9 @@ import FileUploader from "./FileUploader";
 let sessionSalt = "";
 
 function App() {
-  const backendIdHost = "https://192.168.1.224:8104";
+  const backendIdHost = "http://dev-identity.6ixgo.com";
+  // const backendIdHost = "https://192.168.1.224:8104";
+  // const backendIdHost = "https://localhost:7104";
   const frontEndCallback = "http://localhost:3000";
 
   const [socialSigninData, setSocialSigninData] = useState<any>();
@@ -158,7 +160,18 @@ function App() {
 
           <b>Access token: </b>
           <p>
-            <span>{socialSigninData?.accessToken}</span>
+            {/* <span>{socialSigninData?.accessToken}</span> */}
+            <textarea
+              onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setSocialSigninData({
+                  ...socialSigninData,
+                  accessToken: e.target.value,
+                })
+              }
+              value={socialSigninData?.accessToken || ""}
+              rows={8}
+              style={{width: '100%'}}
+            ></textarea>
           </p>
           <b>Refresh token: </b>
           <p>
