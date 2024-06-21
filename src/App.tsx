@@ -8,7 +8,7 @@ import FileUploader from "./FileUploader";
 let sessionSalt = "";
 
 function App() {
-  const backendIdHost = "http://dev-identity.6ixgo.com";
+  const backendIdHost = "https://dev-identity.6ixgo.com";
   // const backendIdHost = "https://192.168.1.224:8104";
   // const backendIdHost = "https://localhost:7104";
   const frontEndCallback = "http://localhost:3000";
