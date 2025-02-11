@@ -20,7 +20,7 @@ const ConversationCard = ({ conversation }) => {
               {getRole(sender.roles)}
             </span>
             <h3 className="font-semibold text-gray-800 text-lg ml-2">
-              {`${sender.firstName}${sender.middleName}${sender.lastName}` || sender.email}
+              {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""}` || sender.email}
             </h3>
           </div>
           <p className="text-sm text-gray-500">{sender.email}</p>
@@ -42,7 +42,7 @@ const ConversationCard = ({ conversation }) => {
               {getRole(receiver.roles)}
             </span>
             <h3 className="font-semibold text-gray-800 text-lg ml-2">
-              {`${receiver.firstName}${receiver.middleName}${receiver.lastName}` || receiver.email}
+              {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""}` || receiver.email}
             </h3>
           </div>
           <p className="text-sm text-gray-500">{receiver.email}</p>
