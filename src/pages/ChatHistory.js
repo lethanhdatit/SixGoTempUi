@@ -20,7 +20,7 @@ const ChatHistory = () => {
     _take = reset ? pageSize : _take ?? take;
 
     try {
-      const data = await getConversations(lateInHours, _take, undefined, countryCode);
+      const data = await getConversations(lateInHours, _take, undefined, countryCode, "ENG");
       if (data.details.length > 0) {
         setConversations(data.details);
         setHasMore(data.total >= _take);

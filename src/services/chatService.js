@@ -9,7 +9,7 @@ const buildApiUrl = (countryCode = 'VNM') => {
   return `${BASE_URL}/${countryCode.toLowerCase()}/api/v1/chats/conversations/lateReply`;
 };
 
-export const getConversations = async (lateInHours, take, lastConversationId, countryCode = 'VNM') => {
+export const getConversations = async (lateInHours, take, lastConversationId, countryCode = 'VNM', locale = "ENG") => {
   try {
     const API_URL = buildApiUrl(countryCode);
 
@@ -24,6 +24,7 @@ export const getConversations = async (lateInHours, take, lastConversationId, co
       params,
       headers: {
         'X-TimeZone-Offset': timeZoneOffset,
+        "X-Locale-Code": locale.toLowerCase(),
       },
     });
 
@@ -33,3 +34,28 @@ export const getConversations = async (lateInHours, take, lastConversationId, co
     throw error;
   }
 };
+
+export const getConversationMessages = async (conversationId, pageNumber = 1, pageSize = 20, locale = "kor") => {
+  try {
+    const timeZoneOffset = new Date().getTimezoneOffset();
+    const response = await axios.get(
+      `${BASE_URL}/api/v1/chats/guest/conversations/${conversationId}`,
+      {
+        params: {
+          pageSize,
+          pageNumber,
+        },
+        headers: {
+          "X-TimeZone-Offset": timeZoneOffset,
+          "X-Locale-Code": locale.toLowerCase(),
+        },
+      }
+    );
+
+    return response.data.data.messages;
+  } catch (error) {
+    console.error("Error fetching conversation messages:", error);
+    throw error;
+  }
+};
+
