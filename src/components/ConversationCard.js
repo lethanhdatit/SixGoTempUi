@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import MessageHistory from "./MessageHistory";
 
-const ConversationCard = ({ conversation }) => {
+const ConversationCard = ({ conversation, countryCode }) => {
   const { sender, receiver, message } = conversation;
   const [showMessages, setShowMessages] = useState(false);
 
@@ -65,7 +65,7 @@ const ConversationCard = ({ conversation }) => {
       </div>
 
       {showMessages && (
-        <MessageHistory conversationId={conversation.conversationId} conversation={conversation} />
+        <MessageHistory conversationId={conversation.conversationId} conversation={conversation} countryCode={countryCode} />
       )}
     </div>
   );

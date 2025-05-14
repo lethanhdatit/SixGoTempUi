@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getConversationMessages } from "../services/chatService";
 
-const MessageHistory = ({ conversationId, conversation }) => {
+const MessageHistory = ({ conversationId, conversation, countryCode }) => {
   const [messages, setMessages] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -13,7 +13,8 @@ const MessageHistory = ({ conversationId, conversation }) => {
         conversationId,
         page,
         pageSize,
-        "ENG"
+        "ENG",
+        countryCode
       );
       if (result.items.length > 0) {
         setMessages((prev) =>

@@ -2,14 +2,15 @@ import axios from 'axios';
 
 const BASE_URL = 'https://notification.6ixgo.com';
 
-const buildApiUrl = (countryCode = 'VNM') => {
-  if (countryCode === 'VNM') {
-    return `${BASE_URL}/api/v1/chats/conversations/lateReply`;
-  }
-  return `${BASE_URL}/${countryCode.toLowerCase()}/api/v1/chats/conversations/lateReply`;
-};
 
 export const getConversations = async (lateInHours, take, lastConversationId, countryCode = 'VNM', locale = "ENG") => {
+  const buildApiUrl = (countryCode = 'VNM') => {
+    if (countryCode === 'VNM') {
+      return `${BASE_URL}/api/v1/chats/conversations/lateReply`;
+    }
+    return `${BASE_URL}/${countryCode.toLowerCase()}/api/v1/chats/conversations/lateReply`;
+  };
+
   try {
     const API_URL = buildApiUrl(countryCode);
 
@@ -35,11 +36,20 @@ export const getConversations = async (lateInHours, take, lastConversationId, co
   }
 };
 
-export const getConversationMessages = async (conversationId, pageNumber = 1, pageSize = 20, locale = "kor") => {
+export const getConversationMessages = async (conversationId, pageNumber = 1, pageSize = 20, locale = "kor", countryCode = 'VNM') => {
+  const buildApiUrl = (countryCode = 'VNM') => {
+    if (countryCode === 'VNM') {
+      return `${BASE_URL}/api/v1/chats/guest/conversations/${conversationId}`;
+    }
+    return `${BASE_URL}/${countryCode.toLowerCase()}/api/v1/chats/guest/conversations/${conversationId}`;
+  };
+
   try {
     const timeZoneOffset = new Date().getTimezoneOffset();
+    const API_URL = buildApiUrl(countryCode);
+
     const response = await axios.get(
-      `${BASE_URL}/api/v1/chats/guest/conversations/${conversationId}`,
+      API_URL,
       {
         params: {
           pageSize,

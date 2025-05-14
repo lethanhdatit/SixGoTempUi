@@ -89,7 +89,7 @@ const ChatHistory = () => {
         endMessage={<p className="text-center text-gray-600 mt-4">No more conversations</p>}
       >
         {conversations.map((conversation) => (
-          <ConversationCard key={conversation.conversationId} conversation={conversation} />
+          <ConversationCard key={conversation.conversationId} conversation={conversation} countryCode={countryCode} />
         ))}
       </InfiniteScroll>
     </div>
