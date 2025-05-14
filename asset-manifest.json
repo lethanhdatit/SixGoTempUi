@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/SixGoTempUi/static/css/main.392b4963.css",
+    "main.js": "/SixGoTempUi/static/js/main.34f57ee5.js",
+    "index.html": "/SixGoTempUi/index.html",
+    "main.392b4963.css.map": "/SixGoTempUi/static/css/main.392b4963.css.map",
+    "main.34f57ee5.js.map": "/SixGoTempUi/static/js/main.34f57ee5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.392b4963.css",
+    "static/js/main.34f57ee5.js"
+  ]
+}
