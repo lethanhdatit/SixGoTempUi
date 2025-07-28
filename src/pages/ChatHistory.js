@@ -41,22 +41,71 @@ const ChatHistory = () => {
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
 
-    _take = reset ? pageSize : _take ?? take;
+    const actualTake = reset ? pageSize : _take ?? take;
+
+    console.log(`fetchConversations called: take=${actualTake}, reset=${reset}, current conversations: ${conversations.length}`);
 
     try {
-      const data = await getConversations(lateInHours, _take, undefined, countryCode, "ENG");
-      if (data.details.length > 0) {
+      const data = await getConversations(lateInHours, actualTake, undefined, countryCode, "ENG");
+      
+      if (reset) {
+        // Reset mode: replace all conversations
+        console.log(`Reset mode: setting ${data.details.length} conversations`);
         setConversations(data.details);
-        setHasMore(data.total >= _take);
+        setHasMore(data.details.length >= pageSize);
       } else {
-        setHasMore(false);
+        // Pagination mode: append new conversations
+        setConversations(prev => {
+          const existingIds = new Set(prev.map(conv => conv.conversationId));
+          const newConversations = data.details.filter(conv => !existingIds.has(conv.conversationId));
+          console.log(`Pagination mode: adding ${newConversations.length} new conversations to existing ${prev.length}`);
+          return [...prev, ...newConversations];
+        });
+        
+        // Has more if the response contains a full page of data
+        const hasMoreData = data.details.length >= pageSize;
+        setHasMore(hasMoreData);
+        console.log(`Pagination check: received ${data.details.length} items, pageSize: ${pageSize}, hasMore: ${hasMoreData}`);
       }
     } catch (error) {
       console.error("Error loading conversations:", error);
+      setHasMore(false);
     } finally {
       isFetchingRef.current = false;
     }
-  }, [lateInHours, take, countryCode]);
+  }, [lateInHours, countryCode, take, conversations.length]);
+
+  // Function to refresh only the first page of conversations to update order without scroll jumping
+  const refreshFirstPage = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    
+    console.log(`Refreshing first page to update conversation order...`);
+    
+    try {
+      // Get fresh first page data
+      const data = await getConversations(lateInHours, pageSize, undefined, countryCode, "ENG");
+      
+      // Update conversations while preserving pagination state
+      setConversations(prev => {
+        const freshConversations = data.details;
+        
+        // If we only have one page, just replace all
+        if (prev.length <= pageSize) {
+          console.log(`Single page refresh: replacing ${prev.length} conversations with ${freshConversations.length}`);
+          return freshConversations;
+        }
+        
+        // For multiple pages, replace first page and keep the rest
+        const remainingConversations = prev.slice(pageSize);
+        const updatedConversations = [...freshConversations, ...remainingConversations];
+        
+        console.log(`Multi-page refresh: replaced first ${pageSize} conversations, kept ${remainingConversations.length} remaining`);
+        return updatedConversations;
+      });
+    } catch (error) {
+      console.error("Error refreshing first page:", error);
+    }
+  }, [lateInHours, countryCode]);
 
   // SignalR setup and event handlers
   useEffect(() => {
@@ -100,10 +149,13 @@ const ChatHistory = () => {
             console.log(`[${countryCode}] Received message:`, { user, message });
             incrementNotificationCount(signalRService.getCurrentCountryCode());
             showBrowserNotification(
-              `Tin nhắn mới (${signalRService.getCurrentCountryCode()})`,
+              `New message (${signalRService.getCurrentCountryCode()})`,
               `${user}: ${message}`,
               "/favicon.ico"
             );
+            
+            // Refresh the first page to get updated conversation order without resetting scroll
+            refreshFirstPage();
           });
 
           // Handle general notifications
@@ -111,10 +163,13 @@ const ChatHistory = () => {
             console.log(`[${countryCode}] Received notification:`, notification);
             incrementNotificationCount(signalRService.getCurrentCountryCode());
             showBrowserNotification(
-              `${notification.title || "Thông báo mới"} (${signalRService.getCurrentCountryCode()})`,
+              `${notification.title || "New notification"} (${signalRService.getCurrentCountryCode()})`,
               notification.message || notification.body,
               "/favicon.ico"
             );
+            
+            // Refresh the first page to get updated conversation order without resetting scroll
+            refreshFirstPage();
           });
 
           // Handle new conversation
@@ -122,13 +177,20 @@ const ChatHistory = () => {
             console.log(`[${countryCode}] New conversation:`, conversation);
             incrementNotificationCount(signalRService.getCurrentCountryCode());
             showBrowserNotification(
-              `Cuộc trò chuyện mới (${signalRService.getCurrentCountryCode()})`,
-              "Có cuộc trò chuyện mới cần phản hồi",
+              `New conversation (${signalRService.getCurrentCountryCode()})`,
+              "New conversation needs response",
               "/favicon.ico"
             );
             
-            // Use callback to avoid stale closure
-            fetchConversations(undefined, true);
+            // Add new conversation to the top of the list without resetting scroll position
+            setConversations(prev => {
+              // Check if conversation already exists to avoid duplicates
+              const exists = prev.some(conv => conv.conversationId === conversation.conversationId);
+              if (!exists) {
+                return [conversation, ...prev];
+              }
+              return prev;
+            });
           });
 
           // Handle conversation updates
@@ -155,8 +217,8 @@ const ChatHistory = () => {
               "/favicon.ico"
             );
             
-            // Use callback to avoid stale closure
-            fetchConversations(undefined, true);
+            // Refresh the first page to get updated conversation order without resetting scroll
+            refreshFirstPage();
           });
 
         }
@@ -181,7 +243,7 @@ const ChatHistory = () => {
       isActive = false;
       clearTimeout(initializationTimeout);
     };
-  }, [countryCode, incrementNotificationCount, showBrowserNotification, fetchConversations]);
+  }, [countryCode, incrementNotificationCount, showBrowserNotification, refreshFirstPage]);
 
   // Separate effect to sync notification country code
   useEffect(() => {
@@ -189,12 +251,27 @@ const ChatHistory = () => {
     setNotificationCountryCode(countryCode);
   }, [countryCode, setNotificationCountryCode]);
 
+  // Separate effect for initial data loading when filters change
   useEffect(() => {
+    console.log(`Filter or country changed - resetting conversations list`);
     setConversations([]);
     setTake(pageSize);
     setHasMore(true);
-    fetchConversations(undefined, true);
-  }, [lateInHours, countryCode, fetchConversations]);
+    
+    // Load initial data
+    const loadInitialData = async () => {
+      try {
+        const data = await getConversations(lateInHours, pageSize, undefined, countryCode, "ENG");
+        setConversations(data.details);
+        setHasMore(data.details.length >= pageSize);
+      } catch (error) {
+        console.error("Error loading initial conversations:", error);
+        setHasMore(false);
+      }
+    };
+    
+    loadInitialData();
+  }, [lateInHours, countryCode]);
 
   // Cleanup SignalR on unmount
   useEffect(() => {
@@ -209,9 +286,12 @@ const ChatHistory = () => {
   }, []);
 
   const loadMore = async () => {
-    if (isFetchingRef.current) return;
-    setTake((prev) => prev + pageSize);
-    await fetchConversations(take + pageSize);
+    if (isFetchingRef.current || !hasMore) return;
+    
+    console.log(`Loading more conversations... Current count: ${conversations.length}, take: ${take}`);
+    const newTake = take + pageSize;
+    setTake(newTake);
+    await fetchConversations(newTake, false); // false = don't reset, just append
   };
 
   return (
