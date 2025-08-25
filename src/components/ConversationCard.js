@@ -14,7 +14,10 @@ const ConversationCard = ({ conversation, countryCode }) => {
   return (
     <div className="conversation-card bg-white shadow-lg rounded-lg p-5 mb-5">
       <div onClick={toggleMessages} className="cursor-pointer">
-        <div style={{ gap: "28px" }} className="flex justify-between items-center">
+        <div
+          style={{ gap: "28px" }}
+          className="flex justify-between items-center"
+        >
           <div className="flex-1 mr-4">
             <div className="flex items-center">
               <span
@@ -27,7 +30,9 @@ const ConversationCard = ({ conversation, countryCode }) => {
                 {getRole(sender.roles)}
               </span>
               <h3 className="font-semibold text-gray-800 text-lg ml-2">
-                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""}` || sender.email}
+                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${
+                  sender.lastName ?? ""
+                }` || sender.email}
               </h3>
             </div>
             <p className="text-sm text-gray-500">{sender.email}</p>
@@ -49,7 +54,9 @@ const ConversationCard = ({ conversation, countryCode }) => {
                 {getRole(receiver.roles)}
               </span>
               <h3 className="font-semibold text-gray-800 text-lg ml-2">
-                {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""}` || receiver.email}
+                {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${
+                  receiver.lastName ?? ""
+                }` || receiver.email}
               </h3>
             </div>
             <p className="text-sm text-gray-500">{receiver.email}</p>
@@ -65,7 +72,11 @@ const ConversationCard = ({ conversation, countryCode }) => {
       </div>
 
       {showMessages && (
-        <MessageHistory conversationId={conversation.conversationId} conversation={conversation} countryCode={countryCode} />
+        <MessageHistory
+          conversationId={conversation.conversationId}
+          conversation={conversation}
+          countryCode={countryCode}
+        />
       )}
     </div>
   );
