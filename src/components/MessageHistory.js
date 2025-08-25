@@ -66,60 +66,66 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                 :{" "}
               </b>
               <span className="text-gray-800">
-  {msg.message || (
-    <i style={{ color: "blue" }}>
-      {msg.orderInfo ? (
-        <>
-          [ Order NO: {msg.orderInfo.orderNo} ] -{" "}
-          <a
-            href={`https://6ixgo.com${msg.orderInfo.productInfo.slug.replace(/\s+/g, "-")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline hover:text-blue-800"
-          >
-            {msg.orderInfo.productInfo.name}
-          </a>{" "}
-          - [ ProductId: {msg.orderInfo.productInfo.productId} ]
-        </>
-      ) : msg.productInfo ? (
-        <>
-          [ Product:{" "}
-          <a
-            href={`https://6ixgo.com${msg.productInfo.slug.replace(/\s+/g, "-")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline hover:text-blue-800"
-          >
-            {msg.productInfo.name}
-          </a>{" "}
-          ] - [ ProductId: {msg.productInfo.productId} ]
-        </>
-      ) : msg.attachments ? (
-        <>
-          [ Attachments:{" "}
-          {msg.attachments
-            .sort((a, b) => a.displayOrder - b.displayOrder)
-            .map((att, idx) => (
-              <span key={att.id} className="mr-2">
-                <a
-                  href={att.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline hover:text-blue-800"
-                >
-                  {att.displayName || `Attachment ${idx + 1}`}
-                </a>
+                {msg.message || (
+                    <i style={{ color: "blue" }}>
+                      {msg.orderInfo ? (
+                        <>
+                          [ Order NO: {msg.orderInfo.orderNo} ] -{" "}
+                          <a
+                            href={`https://6ixgo.com${msg.orderInfo.productInfo.slug.replace(
+                              /\s+/g,
+                              "-"
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline hover:text-blue-800"
+                          >
+                            {msg.orderInfo.productInfo.name}
+                          </a>{" "}
+                          - [ ProductId: {msg.orderInfo.productInfo.productId} ]
+                        </>
+                      ) : msg.productInfo ? (
+                        <>
+                          [ Product:{" "}
+                          <a
+                            href={`https://6ixgo.com${msg.productInfo.slug.replace(
+                              /\s+/g,
+                              "-"
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline hover:text-blue-800"
+                          >
+                            {msg.productInfo.name}
+                          </a>{" "}
+                          ] - [ ProductId: {msg.productInfo.productId} ]
+                        </>
+                      ) : msg.attachments ? (
+                        <>
+                          [ Attachments:{" "}
+                          {msg.attachments
+                            .sort((a, b) => a.displayOrder - b.displayOrder)
+                            .map((att, idx) => (
+                              <span key={att.id} className="mr-2">
+                                <a
+                                  href={att.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 underline hover:text-blue-800"
+                                >
+                                  {att.displayName || `Attachment ${idx + 1}`}
+                                </a>
+                              </span>
+                            ))}
+                          ]
+                        </>
+                      ) : (
+                        "[No content]"
+                      )}
+                    </i>
+                  ) ||
+                  "[No content]"}
               </span>
-            ))}
-          ]
-        </>
-      ) : (
-        "[No content]"
-      )}
-    </i>
-  ) || "[No content]"}
-</span>
-
             </p>
             <p className="text-xs text-gray-400">
               <i>
