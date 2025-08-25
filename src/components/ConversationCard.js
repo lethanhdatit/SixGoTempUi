@@ -36,6 +36,7 @@ const ConversationCard = ({ conversation, countryCode }) => {
               </h3>
             </div>
             <p className="text-sm text-gray-500">{sender.email}</p>
+            <p className="text-sm text-gray-500">{sender.phone}</p>
           </div>
 
           <div className="flex items-center mx-4">
@@ -60,6 +61,7 @@ const ConversationCard = ({ conversation, countryCode }) => {
               </h3>
             </div>
             <p className="text-sm text-gray-500">{receiver.email}</p>
+            <p className="text-sm text-gray-500">{receiver.phone}</p>
           </div>
         </div>
 
