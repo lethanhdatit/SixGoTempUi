@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import MessageHistory from "./MessageHistory";
+import { CopyableField } from "./CopyableField";
 
 const ConversationCard = ({ conversation, countryCode }) => {
   const { sender, receiver, message } = conversation;
@@ -35,8 +36,8 @@ const ConversationCard = ({ conversation, countryCode }) => {
                 }` || sender.email}
               </h3>
             </div>
-            <p className="text-sm text-gray-500">{sender.email}</p>
-            <p className="text-sm text-gray-500">{sender.phone}</p>
+            <CopyableField value={sender.email} label="Email" />
+            <CopyableField value={sender.phone} label="Phone" />
           </div>
 
           <div className="flex items-center mx-4">
@@ -60,8 +61,8 @@ const ConversationCard = ({ conversation, countryCode }) => {
                 }` || receiver.email}
               </h3>
             </div>
-            <p className="text-sm text-gray-500">{receiver.email}</p>
-            <p className="text-sm text-gray-500">{receiver.phone}</p>
+            <CopyableField value={receiver.email} label="Email" />
+            <CopyableField value={receiver.phone} label="Phone" />
           </div>
         </div>
 
