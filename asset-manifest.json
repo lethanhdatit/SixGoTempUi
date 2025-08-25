@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/SixGoTempUi/static/css/main.392b4963.css",
-    "main.js": "/SixGoTempUi/static/js/main.53c47766.js",
+    "main.js": "/SixGoTempUi/static/js/main.3f6d9c8f.js",
     "index.html": "/SixGoTempUi/index.html",
     "main.392b4963.css.map": "/SixGoTempUi/static/css/main.392b4963.css.map",
-    "main.53c47766.js.map": "/SixGoTempUi/static/js/main.53c47766.js.map"
+    "main.3f6d9c8f.js.map": "/SixGoTempUi/static/js/main.3f6d9c8f.js.map"
   },
   "entrypoints": [
     "static/css/main.392b4963.css",
-    "static/js/main.53c47766.js"
+    "static/js/main.3f6d9c8f.js"
   ]
 }
