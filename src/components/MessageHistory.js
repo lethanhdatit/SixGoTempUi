@@ -118,22 +118,52 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                         </>
                       ) : msg.attachments ? (
                         <>
-                          [ Attachments:{" "}
                           {msg.attachments
                             .sort((a, b) => a.displayOrder - b.displayOrder)
-                            .map((att, idx) => (
-                              <span key={att.id} className="mr-2">
-                                <a
-                                  href={att.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 underline hover:text-blue-800"
+                            .map((att, idx) => {
+                              const isImage =
+                                /\.(jpe?g|png|gif|bmp|webp|svg|tiff?|heic)$/i.test(
+                                  att.url
+                                );
+                              return (
+                                <span
+                                  key={att.id}
+                                  className="mr-2 inline-block"
                                 >
-                                  {att.displayName || `Attachment ${idx + 1}`}
-                                </a>
-                              </span>
-                            ))}
-                          ]
+                                  {isImage ? (
+                                    <a
+                                      href={att.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-block"
+                                    >
+                                      <img
+                                        src={att.url}
+                                        alt={
+                                          att.displayName ||
+                                          `Attachment ${idx + 1}`
+                                        }
+                                        className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                      />
+                                    </a>
+                                  ) : (
+                                    <a
+                                      href={att.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      download
+                                      className="flex items-center space-x-1 text-blue-600 underline hover:text-blue-800"
+                                    >
+                                      📎
+                                      <span>
+                                        {att.displayName ||
+                                          `Attachment ${idx + 1}`}
+                                      </span>
+                                    </a>
+                                  )}
+                                </span>
+                              );
+                            })}
                         </>
                       ) : (
                         "[No content]"
