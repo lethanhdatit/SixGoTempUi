@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getConversationMessages } from "../services/chatService";
+import { CopyableField } from "./CopyableField";
 
 const MessageHistory = ({ conversationId, conversation, countryCode }) => {
   const [messages, setMessages] = useState([]);
@@ -66,11 +67,19 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                 :{" "}
               </b>
               <span className="text-gray-800">
-                {msg.message || (
+                {msg.message ? (
+                  <CopyableField value={msg.message} label="message" />
+                ) : (
+                  (
                     <i style={{ color: "blue" }}>
                       {msg.orderInfo ? (
                         <>
-                          [ Order NO: {msg.orderInfo.orderNo} ] -{" "}
+                          [ Order NO:{" "}
+                          <CopyableField
+                            value={msg.orderInfo.orderNo}
+                            label="Order No"
+                          />{" "}
+                          ] -{" "}
                           <a
                             href={`https://6ixgo.com${msg.orderInfo.productInfo.slug.replace(
                               /\s+/g,
@@ -82,7 +91,10 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                           >
                             {msg.orderInfo.productInfo.name}
                           </a>{" "}
-                          - [ ProductId: {msg.orderInfo.productInfo.productId} ]
+                          <CopyableField
+                            value={msg.orderInfo.productInfo.productId}
+                            label="Product Id"
+                          />{" "}
                         </>
                       ) : msg.productInfo ? (
                         <>
@@ -98,7 +110,11 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                           >
                             {msg.productInfo.name}
                           </a>{" "}
-                          ] - [ ProductId: {msg.productInfo.productId} ]
+                          ]{" "}
+                          <CopyableField
+                            value={msg.productInfo.productId}
+                            label="Product Id"
+                          />
                         </>
                       ) : msg.attachments ? (
                         <>
@@ -123,8 +139,8 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                         "[No content]"
                       )}
                     </i>
-                  ) ||
-                  "[No content]"}
+                  ) || "[No content]"
+                )}
               </span>
             </p>
             <p className="text-xs text-gray-400">
