@@ -68,7 +68,7 @@ const ConversationCard = ({ conversation, countryCode }) => {
 
         <div className="mt-4">
           <p className="text-gray-700">
-            <CopyableField value={message.content} label="Message" />
+            <CopyableField value={message.content} label="Last message" />
           </p>
           <p className="text-sm text-gray-500 mt-2">
             {new Date(message.createdTs).toLocaleString()}
