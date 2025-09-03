@@ -77,7 +77,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                           <CopyableField
                             value={msg.orderInfo.orderNo}
                             label="Order No"
-                          /> -{" "}
+                          />{" "}
                           <a
                             href={`https://6ixgo.com${msg.orderInfo.productInfo.slug.replace(
                               /\s+/g,
