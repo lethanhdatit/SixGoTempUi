@@ -74,12 +74,10 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                     <i style={{ color: "blue" }}>
                       {msg.orderInfo ? (
                         <>
-                          [ Order NO:{" "}
                           <CopyableField
                             value={msg.orderInfo.orderNo}
                             label="Order No"
-                          />{" "}
-                          ] -{" "}
+                          /> -{" "}
                           <a
                             href={`https://6ixgo.com${msg.orderInfo.productInfo.slug.replace(
                               /\s+/g,
@@ -98,7 +96,6 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                         </>
                       ) : msg.productInfo ? (
                         <>
-                          [ Product:{" "}
                           <a
                             href={`https://6ixgo.com${msg.productInfo.slug.replace(
                               /\s+/g,
@@ -109,8 +106,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                             className="text-blue-600 underline hover:text-blue-800"
                           >
                             {msg.productInfo.name}
-                          </a>{" "}
-                          ]{" "}
+                          </a>
                           <CopyableField
                             value={msg.productInfo.productId}
                             label="Product Id"
