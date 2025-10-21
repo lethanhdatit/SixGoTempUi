@@ -79,10 +79,9 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                             label="Order No"
                           />{" "}
                           <a
-                            href={`https://6ixgo.com${encodeURIComponent(
-                              msg.orderInfo.productInfo.slug
-                                .replace(/[^a-z0-9]+/gi, "-")
-                                .replace(/^-+|-+$/g, "")
+                            href={`https://6ixgo.com${msg.orderInfo.productInfo.slug.replace(
+                              /\s+/g,
+                              "-"
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -98,10 +97,9 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                       ) : msg.productInfo ? (
                         <>
                           <a
-                            href={`https://6ixgo.com${encodeURIComponent(
-                              msg.productInfo.slug
-                                .replace(/[^a-z0-9]+/gi, "-")
-                                .replace(/^-+|-+$/g, "")
+                            href={`https://6ixgo.com${msg.productInfo.slug.replace(
+                              /\s+/g,
+                              "-"
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
