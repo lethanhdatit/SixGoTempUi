@@ -9,7 +9,7 @@ export const authService = {
   },
 
   logout: async () => {
-    const response = await identityApi.post('/id/v1/account/logout');
+    const response = await identityApi.post('/id/v1/account/logout?byPassCookies=true');
     return response.data;
   },
 };
