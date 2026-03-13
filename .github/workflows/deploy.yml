@@ -28,6 +28,17 @@ jobs:
           PUBLIC_URL: /
           CI: false
 
+      - name: Prepare target directory
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            rm -rf /home/sixgo_admin/FE/Tool/_incoming
+            mkdir -p /home/sixgo_admin/FE/Tool/_incoming
+
       - name: Copy build to VM
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -36,9 +47,9 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
           source: build/*
-          target: ~/FE/Tool/_incoming
+          target: /home/sixgo_admin/FE/Tool/_incoming
           strip_components: 1
-          rm: true
+          rm: false
 
       - name: Deploy and restart PM2
         uses: appleboy/ssh-action@v1
