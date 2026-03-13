@@ -101,7 +101,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
             key={msg.messageId}
             className="mb-2 border-b border-gray-300 pb-2"
           >
-            <p>
+            <div>
               <b className="text-black-1000">
                 {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
                   }` || sender.email}
@@ -209,12 +209,12 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                   ) || "[No content]"
                 )}
               </span>
-            </p>
-            <p className="text-xs text-gray-400">
+            </div>
+            <div className="text-xs text-gray-400">
               <i>
                 <b>{new Date(msg.sentTS).toLocaleString()}</b>
               </i>
-            </p>
+            </div>
             <br></br>
           </div>
         );
