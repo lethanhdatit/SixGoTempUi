@@ -2,6 +2,48 @@ import React, { useEffect, useState } from "react";
 import { getConversationMessages } from "../services/chatService";
 import { CopyableField } from "./CopyableField";
 
+export const buildProductHref = (rawSlug, parentCategory) => {
+  if (!rawSlug) return "";
+
+  // Chuẩn hóa slug (loại bỏ ký tự đặc biệt, khoảng trắng)
+  const cleanedSlug = rawSlug
+    .replace(/[^a-zA-Z0-9-.]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  // Lấy code cũ phía sau dấu '.' cuối cùng (vd: ci692)
+  const match = cleanedSlug.match(/\.([a-zA-Z]{2}\d+)$/);
+  const oldCode = match ? match[1] : "";
+
+  // Lấy phần số (vd: 692)
+  const numberPart = oldCode.replace(/^\D+/g, "");
+
+  // Xác định prefix mới theo parentCategory
+  let prefix = "";
+  switch (parentCategory) {
+    case "CTG10000000001":
+      prefix = "ci";
+      break;
+    case "CTG10000000002":
+      prefix = "si";
+      break;
+    case "CTG10000000003":
+      prefix = "pi";
+      break;
+    default:
+      return `https://6ixgo.com/${cleanedSlug}`; // fallback nếu không khớp
+  }
+
+  // Gắn code mới
+  const newCode = prefix + numberPart;
+
+  // Nếu có code cũ thì thay thế, nếu không thì thêm vào cuối
+  const newSlug = oldCode
+    ? cleanedSlug.replace(oldCode, newCode)
+    : `${cleanedSlug}.${newCode}`;
+
+  return `https://6ixgo.com/${newSlug}`;
+};
+
 const MessageHistory = ({ conversationId, conversation, countryCode }) => {
   const [messages, setMessages] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -43,48 +85,6 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
     fetchMessages(nextPage);
   };
 
-  const buildProductHref = (rawSlug, parentCategory) => {
-    if (!rawSlug) return "";
-
-    // Chuẩn hóa slug (loại bỏ ký tự đặc biệt, khoảng trắng)
-    const cleanedSlug = rawSlug
-      .replace(/[^a-zA-Z0-9-.]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-
-    // Lấy code cũ phía sau dấu '.' cuối cùng (vd: ci692)
-    const match = cleanedSlug.match(/\.([a-zA-Z]{2}\d+)$/);
-    const oldCode = match ? match[1] : "";
-
-    // Lấy phần số (vd: 692)
-    const numberPart = oldCode.replace(/^\D+/g, "");
-
-    // Xác định prefix mới theo parentCategory
-    let prefix = "";
-    switch (parentCategory) {
-      case "CTG10000000001":
-        prefix = "ci";
-        break;
-      case "CTG10000000002":
-        prefix = "si";
-        break;
-      case "CTG10000000003":
-        prefix = "pi";
-        break;
-      default:
-        return `https://6ixgo.com/${cleanedSlug}`; // fallback nếu không khớp
-    }
-
-    // Gắn code mới
-    const newCode = prefix + numberPart;
-
-    // Nếu có code cũ thì thay thế, nếu không thì thêm vào cuối
-    const newSlug = oldCode
-      ? cleanedSlug.replace(oldCode, newCode)
-      : `${cleanedSlug}.${newCode}`;
-
-    return `https://6ixgo.com/${newSlug}`;
-  };
-
   return (
     <div className="bg-gray-100 p-4 mt-3 rounded-md shadow-inner">
       <br></br>
@@ -103,9 +103,8 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
           >
             <p>
               <b className="text-black-1000">
-                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${
-                  sender.lastName ?? ""
-                }` || sender.email}
+                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
+                  }` || sender.email}
                 :{" "}
               </b>
               <span className="text-gray-800">

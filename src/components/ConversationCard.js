@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import MessageHistory from "./MessageHistory";
 import { CopyableField } from "./CopyableField";
+import { buildProductHref } from "./MessageHistory";
 
 const ConversationCard = ({ conversation, countryCode }) => {
-  const { sender, receiver, message } = conversation;
+  const { sender, receiver, message, productInfo } = conversation;
   const [showMessages, setShowMessages] = useState(false);
 
   const toggleMessages = () => {
@@ -22,18 +23,16 @@ const ConversationCard = ({ conversation, countryCode }) => {
           <div className="flex-1 mr-4">
             <div className="flex items-center">
               <span
-                className={`text-xs font-medium px-2 py-1 rounded-full ${
-                  getRole(sender.roles) === "Seller"
-                    ? "bg-blue-100 text-blue-600"
-                    : "bg-green-100 text-green-600"
-                }`}
+                className={`text-xs font-medium px-2 py-1 rounded-full ${getRole(sender.roles) === "Seller"
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-green-100 text-green-600"
+                  }`}
               >
                 {getRole(sender.roles)}
               </span>
               <h3 className="font-semibold text-gray-800 text-lg ml-2">
-                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${
-                  sender.lastName ?? ""
-                }` || sender.email}
+                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
+                  }` || sender.email}
               </h3>
             </div>
             <CopyableField value={sender.email} label="Email" />
@@ -47,18 +46,16 @@ const ConversationCard = ({ conversation, countryCode }) => {
           <div className="flex-1">
             <div className="flex items-center">
               <span
-                className={`text-xs font-medium px-2 py-1 rounded-full ${
-                  getRole(receiver.roles) === "Seller"
-                    ? "bg-blue-100 text-blue-600"
-                    : "bg-green-100 text-green-600"
-                }`}
+                className={`text-xs font-medium px-2 py-1 rounded-full ${getRole(receiver.roles) === "Seller"
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-green-100 text-green-600"
+                  }`}
               >
                 {getRole(receiver.roles)}
               </span>
               <h3 className="font-semibold text-gray-800 text-lg ml-2">
-                {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${
-                  receiver.lastName ?? ""
-                }` || receiver.email}
+                {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""
+                  }` || receiver.email}
               </h3>
             </div>
             <CopyableField value={receiver.email} label="Email" />
@@ -67,6 +64,39 @@ const ConversationCard = ({ conversation, countryCode }) => {
         </div>
 
         <div className="mt-4">
+          {
+            productInfo && (<p className="text-gray-700">
+              Marketplace:
+              <>
+                <p>
+                  <i style={{ color: "blue" }}> <a
+                    href={buildProductHref(
+                      productInfo.slug,
+                      productInfo.parentCategoryCode
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline hover:text-blue-800"
+                  >
+                    {productInfo.name}
+                  </a></i>
+
+                </p>
+                <p>
+                  <i style={{ color: "blue" }}>
+                    <CopyableField
+                      value={productInfo.productId}
+                      label="Product Id"
+                    /></i>
+                </p>
+                <p>
+                  Status: { productInfo.statusText }
+                </p>
+              </>
+              <br />
+            </p>
+            )
+          }
           <p className="text-gray-700">
             <CopyableField value={message.content} label="Last message" />
           </p>
@@ -76,14 +106,16 @@ const ConversationCard = ({ conversation, countryCode }) => {
         </div>
       </div>
 
-      {showMessages && (
-        <MessageHistory
-          conversationId={conversation.conversationId}
-          conversation={conversation}
-          countryCode={countryCode}
-        />
-      )}
-    </div>
+      {
+        showMessages && (
+          <MessageHistory
+            conversationId={conversation.conversationId}
+            conversation={conversation}
+            countryCode={countryCode}
+          />
+        )
+      }
+    </div >
   );
 };
 
