@@ -68,8 +68,8 @@ jobs:
             PORT=3100
 
             # Atomic swap
-            sudo rm -rf "$LIVE"
-            sudo mv "$INCOMING" "$LIVE"
+            rm -rf "$LIVE"
+            mv "$INCOMING" "$LIVE"
 
             # Ensure serve is installed globally
             command -v serve >/dev/null 2>&1 || npm install -g serve
