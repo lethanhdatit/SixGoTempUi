@@ -29,9 +29,11 @@ const ConversationCard = ({ conversation, countryCode }) => {
               >
                 {getRole(sender.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2 truncate">
-                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
-                  }` || sender.email}
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0" title={`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""}`}>
+                <span className="block truncate sm:overflow-visible sm:whitespace-normal">
+                  {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
+                    }` || sender.email}
+                </span>
               </h3>
             </div>
             <CopyableField value={sender.email} label="Email" />
@@ -52,9 +54,11 @@ const ConversationCard = ({ conversation, countryCode }) => {
               >
                 {getRole(receiver.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2 truncate">
-                {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""
-                  }` || receiver.email}
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0" title={`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""}`}>
+                <span className="block truncate sm:overflow-visible sm:whitespace-normal">
+                  {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""
+                    }` || receiver.email}
+                </span>
               </h3>
             </div>
             <CopyableField value={receiver.email} label="Email" />
@@ -64,49 +68,45 @@ const ConversationCard = ({ conversation, countryCode }) => {
 
         <div className="mt-4">
           {
-            productInfo && (<p className="text-gray-700">
-              Marketplace:
-              <>
-                <p>
-                  <i style={{ color: "blue" }}>
-                    <a
-                      href={buildProductHref(
-                        productInfo.slug,
-                        productInfo.parentCategoryCode
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      {productInfo.name}
-                    </a>
-                  </i>
-
-                </p>
-                <p>
-                  <i style={{ color: "blue" }}>
-                    <CopyableField
-                      value={productInfo.productId}
-                      label="Product Id"
-                    /></i>
-                </p>
-                <p>
-                  <span className="text-sm text-gray-600 font-medium mr-2">Status:</span>
-                  <i>
-                    <b style={{ color: "orange" }}>{productInfo.statusText}</b>
-                  </i>
-                </p>
-              </>
-              <br />
-            </p>
+            productInfo && (<div className="text-gray-700">
+              <div className="font-medium">Marketplace:</div>
+              <div>
+                <i style={{ color: "blue" }}>
+                  <a
+                    href={buildProductHref(
+                      productInfo.slug,
+                      productInfo.parentCategoryCode
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline hover:text-blue-800"
+                  >
+                    {productInfo.name}
+                  </a>
+                </i>
+              </div>
+              <div>
+                <i style={{ color: "blue" }}>
+                  <CopyableField
+                    value={productInfo.productId}
+                    label="Product Id"
+                  /></i>
+              </div>
+              <div>
+                <span className="text-sm text-gray-600 font-medium mr-2">Status:</span>
+                <i>
+                  <b style={{ color: "orange" }}>{productInfo.statusText}</b>
+                </i>
+              </div>
+            </div>
             )
           }
-          <p className="text-gray-700">
+          <div className="text-gray-700 mt-2">
             <CopyableField value={message.content} label="Last message" />
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
+          </div>
+          <div className="text-sm text-gray-500 mt-2">
             {new Date(message.createdTs).toLocaleString()}
-          </p>
+          </div>
         </div>
       </div>
 
