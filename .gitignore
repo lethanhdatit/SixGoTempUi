@@ -11,6 +11,7 @@
 # production
 /build
 /redirect
+/public/tailwind.css
 
 # misc
 .DS_Store
