@@ -69,17 +69,19 @@ const ConversationCard = ({ conversation, countryCode }) => {
               Marketplace:
               <>
                 <p>
-                  <i style={{ color: "blue" }}> <a
-                    href={buildProductHref(
-                      productInfo.slug,
-                      productInfo.parentCategoryCode
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline hover:text-blue-800"
-                  >
-                    {productInfo.name}
-                  </a></i>
+                  <i style={{ color: "blue" }}>
+                    <a
+                      href={buildProductHref(
+                        productInfo.slug,
+                        productInfo.parentCategoryCode
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline hover:text-blue-800"
+                    >
+                      {productInfo.name}
+                    </a>
+                  </i>
 
                 </p>
                 <p>
@@ -90,7 +92,10 @@ const ConversationCard = ({ conversation, countryCode }) => {
                     /></i>
                 </p>
                 <p>
-                  Status: { productInfo.statusText }
+                  <span className="text-sm text-gray-600 font-medium mr-2">Status:</span>
+                  <i>
+                    <b style={{ color: "orange" }}>{productInfo.statusText}</b>
+                  </i>
                 </p>
               </>
               <br />
