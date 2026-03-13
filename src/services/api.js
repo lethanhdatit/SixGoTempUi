@@ -103,3 +103,4 @@ const createApiInstance = (getBaseUrl) => {
 
 export const identityApi = createApiInstance(() => getConfig().identityApiUrl);
 export const adminApi = createApiInstance(() => getConfig().adminApiUrl);
+export const notificationApi = createApiInstance(() => getConfig().notificationApiUrl);
