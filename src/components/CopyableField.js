@@ -15,9 +15,9 @@ export const CopyableField = ({ value, label }) => {
   };
 
   return (
-    <div className="flex items-center text-sm text-gray-600 mt-1">
-      <span className="font-medium mr-2">{label}:</span>
-      <span className="truncate">{trimmed}</span>
+    <div className="flex items-center text-sm text-gray-600 mt-1 min-w-0">
+      <span className="font-medium mr-2 shrink-0">{label}:</span>
+      <span className="truncate min-w-0">{trimmed}</span>
       <button
         onClick={handleCopy}
         className={`ml-2 p-1 rounded-full transition-colors duration-200 ${

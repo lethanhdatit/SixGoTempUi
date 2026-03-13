@@ -295,10 +295,10 @@ const ChatHistory = () => {
   };
 
   return (
-    <div className="chat-history-container p-6 bg-gray-50 min-h-screen">
-      <div className="filter-container mb-6 flex justify-between items-center">
+    <div className="chat-history-container p-3 sm:p-6 bg-gray-50 min-h-screen">
+      <div className="filter-container mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
         <h1 
-          className="text-2xl font-bold text-gray-800 cursor-pointer"
+          className="text-xl sm:text-2xl font-bold text-gray-800 cursor-pointer"
           onClick={() => resetNotificationCount(countryCode)}
           title="Click to clear notifications"
         >
@@ -311,7 +311,7 @@ const ChatHistory = () => {
         </h1>
         
         {/* SignalR Connection Status */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 shrink-0">
           <div className="flex items-center space-x-2">
             <div className={`w-3 h-3 rounded-full ${isSignalRConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
             <span className="text-sm text-gray-600">
@@ -321,23 +321,21 @@ const ChatHistory = () => {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex-1 flex justify-center">
-          <div className="flex items-center">
-            <label className="text-gray-600 font-medium mr-2">Country</label>
-            <select
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value)}
-              className="p-2 border rounded-md bg-white text-gray-800"
-            >
-              <option value="VNM">Vietnam</option>
-              <option value="MYS">Malaysia</option>
-            </select>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+        <div className="flex items-center">
+          <label className="text-gray-600 font-medium mr-2">Country</label>
+          <select
+            value={countryCode}
+            onChange={(e) => setCountryCode(e.target.value)}
+            className="p-2 border rounded-md bg-white text-gray-800"
+          >
+            <option value="VNM">Vietnam</option>
+            <option value="MYS">Malaysia</option>
+          </select>
         </div>
 
         <div className="flex items-center">
-          <label className="text-gray-600 font-medium mr-2">Waited for a response for at least</label>
+          <label className="text-gray-600 font-medium mr-2 whitespace-nowrap">Waited for a response for at least</label>
           <input
             type="number"
             value={lateInHours}

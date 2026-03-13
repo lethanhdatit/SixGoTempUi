@@ -6,17 +6,20 @@
   "dependencies": {
     "@microsoft/signalr": "^8.0.7",
     "@tailwindcss/cli": "^4.0.6",
+    "antd": "^6.1.1",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "lucide-react": "^0.541.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-infinite-scroll-component": "^6.1.0",
+    "react-router-dom": "^7.13.1",
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "tailwind": "tailwindcss -i src/index.css -o src/output.css",
+    "start": "npm run tailwind && react-scripts start",
+    "build": "npm run tailwind && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",

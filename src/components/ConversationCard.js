@@ -14,23 +14,22 @@ const ConversationCard = ({ conversation, countryCode }) => {
   const getRole = (roles) => (roles.includes("Seller") ? "Seller" : "Buyer");
 
   return (
-    <div className="conversation-card bg-white shadow-lg rounded-lg p-5 mb-5">
+    <div className="conversation-card bg-white shadow-lg rounded-lg p-3 sm:p-5 mb-3 sm:mb-5">
       <div onClick={toggleMessages} className="cursor-pointer">
         <div
-          style={{ gap: "28px" }}
-          className="flex justify-between items-center"
+          className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-7"
         >
-          <div className="flex-1 mr-4">
-            <div className="flex items-center">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center min-w-0">
               <span
-                className={`text-xs font-medium px-2 py-1 rounded-full ${getRole(sender.roles) === "Seller"
+                className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${getRole(sender.roles) === "Seller"
                   ? "bg-blue-100 text-blue-600"
                   : "bg-green-100 text-green-600"
                   }`}
               >
                 {getRole(sender.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2">
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 truncate">
                 {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
                   }` || sender.email}
               </h3>
@@ -39,21 +38,21 @@ const ConversationCard = ({ conversation, countryCode }) => {
             <CopyableField value={sender.phone} label="Phone" />
           </div>
 
-          <div className="flex items-center mx-4">
+          <div className="hidden sm:flex items-center mx-4 shrink-0">
             <span className="text-gray-500 text-2xl">→</span>
           </div>
 
-          <div className="flex-1">
-            <div className="flex items-center">
+          <div className="flex-1 min-w-0 border-t sm:border-t-0 pt-2 sm:pt-0">
+            <div className="flex items-center min-w-0">
               <span
-                className={`text-xs font-medium px-2 py-1 rounded-full ${getRole(receiver.roles) === "Seller"
+                className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${getRole(receiver.roles) === "Seller"
                   ? "bg-blue-100 text-blue-600"
                   : "bg-green-100 text-green-600"
                   }`}
               >
                 {getRole(receiver.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2">
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 truncate">
                 {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""
                   }` || receiver.email}
               </h3>

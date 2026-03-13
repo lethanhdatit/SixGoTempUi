@@ -86,7 +86,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 mt-3 rounded-md shadow-inner">
+    <div className="bg-gray-100 p-2 sm:p-4 mt-3 rounded-md shadow-inner overflow-hidden">
       <br></br>
       <h2 className="font-semibold text-gray-1100 mb-2">Logs:</h2>
       <br></br>
