@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import MessageHistory from "./MessageHistory";
 import { CopyableField } from "./CopyableField";
 import { buildProductHref } from "./MessageHistory";
@@ -6,15 +6,23 @@ import { buildProductHref } from "./MessageHistory";
 const ConversationCard = ({ conversation, countryCode }) => {
   const { sender, receiver, message, productInfo } = conversation;
   const [showMessages, setShowMessages] = useState(false);
+  const cardRef = useRef(null);
 
   const toggleMessages = () => {
-    setShowMessages((prev) => !prev);
+    setShowMessages((prev) => {
+      if (prev) {
+        setTimeout(() => {
+          cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 0);
+      }
+      return !prev;
+    });
   };
 
   const getRole = (roles) => (roles.includes("Seller") ? "Seller" : "Buyer");
 
   return (
-    <div className="conversation-card bg-white shadow-lg rounded-lg p-3 sm:p-5 mb-3 sm:mb-5">
+    <div ref={cardRef} className="conversation-card bg-white shadow-lg rounded-lg p-3 sm:p-5 mb-3 sm:mb-5">
       <div onClick={toggleMessages} className="cursor-pointer">
         <div
           className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-7"
@@ -38,11 +46,12 @@ const ConversationCard = ({ conversation, countryCode }) => {
             <CopyableField value={sender.phone} label="Phone" />
           </div>
 
-          <div className="hidden sm:flex items-center mx-4 shrink-0">
-            <span className="text-gray-500 text-2xl">→</span>
+          <div className="flex items-center shrink-0 sm:mx-4 justify-center py-1 sm:py-0">
+            <span className="text-gray-800 text-xs sm:hidden"><b>↓</b></span>
+            <span className="text-gray-500 text-2xl hidden sm:inline">→</span>
           </div>
 
-          <div className="flex-1 min-w-0 border-t sm:border-t-0 pt-2 sm:pt-0">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center min-w-0">
               <span
                 className={`text-xs font-medium px-2 py-1 rounded-full shrink-0 ${getRole(receiver.roles) === "Seller"
@@ -113,6 +122,7 @@ const ConversationCard = ({ conversation, countryCode }) => {
             conversationId={conversation.conversationId}
             conversation={conversation}
             countryCode={countryCode}
+            toggleMessages={toggleMessages}
           />
         )
       }

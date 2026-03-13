@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getConversationMessages } from "../services/chatService";
 import { CopyableField } from "./CopyableField";
 
@@ -44,11 +44,16 @@ export const buildProductHref = (rawSlug, parentCategory) => {
   return `https://6ixgo.com/${newSlug}`;
 };
 
-const MessageHistory = ({ conversationId, conversation, countryCode }) => {
+const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessages }) => {
   const [messages, setMessages] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const containerRef = useRef(null);
   const pageSize = 20;
+
+  const scrollToTop = () => {
+    containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const fetchMessages = async (page = 1) => {
     try {
@@ -86,7 +91,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-2 sm:p-4 mt-3 rounded-md shadow-inner overflow-hidden">
+    <div ref={containerRef} className="bg-gray-100 p-2 sm:p-4 mt-3 rounded-md shadow-inner overflow-hidden">
       <br></br>
       {messages.map((msg) => {
         var sender =
@@ -222,16 +227,32 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
           </div>
         );
       })}
-      {hasMore ? (
-        <button
-          onClick={loadMore}
-          className="mt-2 text-blue-600 hover:underline text-sm font-medium"
-        >
-          Load more...
-        </button>
-      ) : (
-        <p className="text-sm text-gray-400 mt-2">No more messages</p>
-      )}
+      <div className="flex items-center mt-2">
+        <div>
+          {hasMore ? (
+            <button
+              onClick={loadMore}
+              className="default text-blue-600 hover:underline text-sm font-medium"
+            >
+              Load more ↓ { " " }
+            </button>
+          ) : (
+            <p className="text-sm text-gray-400">No more messages</p>
+          )}
+        </div>
+        {messages.length > 3 && (
+          <div className="flex ml-2 items-center gap-4 text-sm text-gray-500">
+             <button
+            onClick={toggleMessages}
+            className="text-sm text-blue-600 hover:underline flex items-center gap-1 ml-auto"
+            title="Scroll to top"
+          >
+            { " " } Collapse ↑
+          </button>
+          </div>
+         
+        )}
+      </div>
     </div>
   );
 };
