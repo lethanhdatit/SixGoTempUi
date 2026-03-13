@@ -64,7 +64,8 @@ const ConversationCard = ({ conversation, countryCode }) => {
 
         <div className="mt-4">
           {
-            productInfo && (<div className="text-gray-700">
+            productInfo && (
+            <div className="text-gray-700 border border-gray-200 rounded-lg p-3 mt-2">
               <div className="font-medium">Marketplace:</div>
               <div>
                 <i style={{ color: "blue" }}>
@@ -97,10 +98,10 @@ const ConversationCard = ({ conversation, countryCode }) => {
             </div>
             )
           }
-          <div className="text-gray-700 mt-2">
-            <CopyableField value={message.content} label="Last message" />
+          <div className="text-sm text-gray-900 mt-4">
+            <CopyableField value={message.content} />
           </div>
-          <div className="text-sm text-gray-500 mt-2">
+          <div className="text-sm text-gray-400 mt-1">
             {new Date(message.createdTs).toLocaleString()}
           </div>
         </div>

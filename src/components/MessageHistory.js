@@ -88,8 +88,6 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
   return (
     <div className="bg-gray-100 p-2 sm:p-4 mt-3 rounded-md shadow-inner overflow-hidden">
       <br></br>
-      <h2 className="font-semibold text-gray-1100 mb-2">Logs:</h2>
-      <br></br>
       {messages.map((msg) => {
         var sender =
           conversation.sender?.userId === msg.sender?.userId
@@ -102,17 +100,26 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
             className="mb-2 border-b border-gray-300 pb-2"
           >
             <div>
-              <b className="text-black-1000">
-                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
-                  }` || sender.email}
-                :{" "}
-              </b>
+              <p>
+                <b className="text-black-1000">
+                  <span>
+                    {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
+                      }` || sender.email}
+                  </span>
+                  {"  "}
+                  <span className="text-xs text-gray-400">
+                    <i>
+                      <b>{new Date(msg.sentTS).toLocaleString()}</b>
+                    </i>
+                  </span>
+                </b>
+                {msg.message && <CopyableField value={msg.message} />}
+              </p>
+
               <span className="text-gray-800">
-                {msg.message ? (
-                  <CopyableField value={msg.message} label="message" />
-                ) : (
+                {!msg.message && (
                   (
-                    <i style={{ color: "blue" }}>
+                    <div className="border border-gray-200 rounded-lg p-3 mt-2">
                       {msg.orderInfo ? (
                         <>
                           <CopyableField
@@ -205,17 +212,13 @@ const MessageHistory = ({ conversationId, conversation, countryCode }) => {
                       ) : (
                         "[No content]"
                       )}
-                    </i>
+                    </div>
                   ) || "[No content]"
                 )}
               </span>
             </div>
-            <div className="text-xs text-gray-400">
-              <i>
-                <b>{new Date(msg.sentTS).toLocaleString()}</b>
-              </i>
-            </div>
-            <br></br>
+
+            {/* <br></br> */}
           </div>
         );
       })}
