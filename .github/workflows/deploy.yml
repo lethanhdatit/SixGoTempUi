@@ -72,7 +72,7 @@ jobs:
             mv "$INCOMING" "$LIVE"
 
             # Ensure serve is installed globally
-            command -v serve >/dev/null 2>&1 || npm install -g serve
+            command -v serve >/dev/null 2>&1 || sudo npm install -g serve
 
             # Start or restart PM2 process
             if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
