@@ -296,54 +296,50 @@ const ChatHistory = () => {
 
   return (
     <div className="chat-history-container p-3 sm:p-6 bg-gray-50 min-h-screen">
-      <div className="filter-container mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-        <h1 
-          className="text-xl sm:text-2xl font-bold text-gray-800 cursor-pointer"
-          onClick={() => resetNotificationCount(countryCode)}
-          title="Click to clear notifications"
-        >
-          Last message of conversations ({countryCode})
-          {notificationCount > 0 && (
-            <span className="ml-2 bg-red-500 text-white text-sm px-2 py-1 rounded-full">
-              {notificationCount}
-            </span>
-          )}
-        </h1>
-        
-        {/* SignalR Connection Status */}
-        <div className="flex items-center space-x-4 shrink-0">
-          <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded-full ${isSignalRConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            <span className="text-sm text-gray-600">
-              {isSignalRConnected ? `Connected (${countryCode})` : `Disconnected (${countryCode})`}
+      {/* Header row: title + status + filters all in one compact bar on mobile */}
+      <div className="mb-4 sm:mb-6">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h1 
+            className="text-xl sm:text-2xl font-bold text-gray-800 cursor-pointer"
+            onClick={() => resetNotificationCount(countryCode)}
+            title="Click to clear notifications"
+          >
+            Chat history
+            {notificationCount > 0 && (
+              <span className="ml-2 bg-red-500 text-white text-sm px-2 py-1 rounded-full">
+                {notificationCount}
+              </span>
+            )}
+          </h1>
+          <div className="flex items-center gap-2">
+            <div className={`w-2.5 h-2.5 rounded-full ${isSignalRConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <span className="text-xs text-gray-500">
+              {isSignalRConnected ? `Connected` : `Disconnected`}
             </span>
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
-        <div className="flex items-center">
-          <label className="text-gray-600 font-medium mr-2">Country</label>
+        <div className="flex items-center flex-wrap gap-3 mt-3 justify-between">
           <select
             value={countryCode}
             onChange={(e) => setCountryCode(e.target.value)}
-            className="p-2 border rounded-md bg-white text-gray-800"
+            className="px-2 py-1.5 border rounded-md bg-white text-gray-800 text-sm"
           >
             <option value="VNM">Vietnam</option>
             <option value="MYS">Malaysia</option>
           </select>
-        </div>
 
-        <div className="flex items-center">
-          <label className="text-gray-600 font-medium mr-2 whitespace-nowrap">Waited for a response for at least</label>
-          <input
-            type="number"
-            value={lateInHours}
-            onChange={(e) => setLateInHours(Number(e.target.value))}
-            className="p-2 border rounded-md w-20 mr-2"
-            placeholder="Hours"
-          />
-          <label className="text-gray-600 font-medium">hours</label>
+          <div className="flex items-center gap-1.5">
+            <label className="text-sm text-gray-600">Late ≥</label>
+            <input
+              type="number"
+              value={lateInHours}
+              onChange={(e) => setLateInHours(Number(e.target.value))}
+              className="p-1.5 border rounded-md w-16 text-sm"
+              placeholder="0"
+            />
+            <label className="text-sm text-gray-600">h</label>
+          </div>
         </div>
       </div>
 

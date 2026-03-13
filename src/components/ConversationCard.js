@@ -29,11 +29,9 @@ const ConversationCard = ({ conversation, countryCode }) => {
               >
                 {getRole(sender.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0" title={`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""}`}>
-                <span className="block truncate sm:overflow-visible sm:whitespace-normal">
-                  {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
-                    }` || sender.email}
-                </span>
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0 break-words sm:truncate">
+                {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
+                  }` || sender.email}
               </h3>
             </div>
             <CopyableField value={sender.email} label="Email" />
@@ -54,11 +52,9 @@ const ConversationCard = ({ conversation, countryCode }) => {
               >
                 {getRole(receiver.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0" title={`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""}`}>
-                <span className="block truncate sm:overflow-visible sm:whitespace-normal">
-                  {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""
-                    }` || receiver.email}
-                </span>
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0 break-words sm:truncate">
+                {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""
+                  }` || receiver.email}
               </h3>
             </div>
             <CopyableField value={receiver.email} label="Email" />
