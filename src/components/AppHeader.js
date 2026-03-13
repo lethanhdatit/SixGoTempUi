@@ -14,7 +14,7 @@ const AppHeader = () => {
       <div className="flex items-center gap-2 sm:gap-4 min-w-0">
         <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-600 min-w-0">
           <User size={16} className="text-gray-400 shrink-0" />
-          <span className="break-all sm:truncate sm:max-w-[200px]">{userName || 'User'}</span>
+          <span className="break-words sm:truncate sm:max-w-[200px]">{userName || 'User'}</span>
         </div>
         <button
           onClick={logout}
