@@ -37,7 +37,7 @@ const ConversationCard = ({ conversation, countryCode }) => {
               >
                 {getRole(sender.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0 break-words sm:truncate">
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0 break-words">
                 {`${sender.firstName ?? ""}${sender.middleName ?? ""}${sender.lastName ?? ""
                   }` || sender.email}
               </h3>
@@ -61,7 +61,7 @@ const ConversationCard = ({ conversation, countryCode }) => {
               >
                 {getRole(receiver.roles)}
               </span>
-              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0 break-words sm:truncate">
+              <h3 className="font-semibold text-gray-800 text-lg ml-2 min-w-0 break-words">
                 {`${receiver.firstName ?? ""}${receiver.middleName ?? ""}${receiver.lastName ?? ""
                   }` || receiver.email}
               </h3>
