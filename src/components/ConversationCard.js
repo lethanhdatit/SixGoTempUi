@@ -47,8 +47,8 @@ const ConversationCard = ({ conversation, countryCode }) => {
           </div>
 
           <div className="flex items-center shrink-0 sm:mx-4 justify-center py-1 sm:py-0">
-            <span className="text-gray-800 text-xs sm:hidden"><b>↓</b></span>
-            <span className="text-gray-500 text-2xl hidden sm:inline">→</span>
+            <span className="text-gray-800 text-xs block sm:hidden"><b>↓</b></span>
+            <span className="text-gray-500 text-2xl hidden sm:block">→</span>
           </div>
 
           <div className="flex-1 min-w-0">
