@@ -1,6 +1,28 @@
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 
+const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+const renderWithLinks = (text) => {
+  const parts = text.split(urlRegex);
+  return parts.map((part, i) =>
+    urlRegex.test(part) ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        className="text-blue-600 underline hover:text-blue-800"
+      >
+        {part}
+      </a>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  );
+};
+
 export const CopyableField = ({ value, label }) => {
   const [copied, setCopied] = useState(false);
 
@@ -17,7 +39,7 @@ export const CopyableField = ({ value, label }) => {
   return (
     <div className="flex items-start sm:items-center text-sm text-gray-600 mt-1 min-w-0">
       {label && (<span className="font-medium mr-2 shrink-0">{label}:</span>)}
-      <span className="break-words min-w-0">{trimmed}</span>
+      <span className="break-words min-w-0">{renderWithLinks(trimmed)}</span>
       <button
         onClick={handleCopy}
         className={`ml-1 p-1 rounded-full transition-colors duration-200 shrink-0 ${copied ? "bg-green-100" : "hover:bg-gray-200"
