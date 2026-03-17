@@ -167,6 +167,66 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                             label="Product Id"
                           />
                         </>
+                      ) : msg.jobInfo ? (
+                        <>
+                          <a
+                            href={`${getCountryConfig().marketplaceDomain}/jobGo/${msg.jobInfo.jobId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-600 underline hover:text-blue-800"
+                          >
+                            {msg.jobInfo.title}
+                          </a>
+                          <CopyableField
+                            value={msg.jobInfo.jobId}
+                            label="Job Id"
+                          />
+                          {msg.jobInfo.companyName && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium mr-2">Company:</span>
+                              {msg.jobInfo.companyName}
+                            </div>
+                          )}
+                          <div className="text-sm text-gray-600">
+                            {msg.jobInfo.employmentType && (
+                              <span className="mr-3">
+                                <span className="font-medium mr-1">Type:</span>
+                                {msg.jobInfo.employmentType}
+                              </span>
+                            )}
+                            {msg.jobInfo.status && (
+                              <span>
+                                <span className="font-medium mr-1">Status:</span>
+                                <b style={{ color: msg.jobInfo.status === "open" ? "green" : "orange" }}>
+                                  {msg.jobInfo.status}
+                                </b>
+                              </span>
+                            )}
+                          </div>
+                          {msg.jobInfo.images && msg.jobInfo.images.length > 0 && (
+                            <div className="mt-1">
+                              {msg.jobInfo.images
+                                .sort((a, b) => a.displayOrder - b.displayOrder)
+                                .map((img) => (
+                                  <a
+                                    key={img.id}
+                                    href={img.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block mr-2"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <img
+                                      src={img.url}
+                                      alt={img.title || "Job image"}
+                                      className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                    />
+                                  </a>
+                                ))}
+                            </div>
+                          )}
+                        </>
                       ) : msg.attachments ? (
                         <>
                           {msg.attachments
