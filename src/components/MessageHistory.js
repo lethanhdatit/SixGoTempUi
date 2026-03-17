@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getConversationMessages } from "../services/chatService";
 import { CopyableField } from "./CopyableField";
-import { getCountryConfig } from "../config/env";
 
 export const buildProductHref = (rawSlug, parentCategory) => {
   if (!rawSlug) return "";
@@ -31,7 +30,7 @@ export const buildProductHref = (rawSlug, parentCategory) => {
       prefix = "pi";
       break;
     default:
-      return `https://${getCountryConfig().marketplaceDomain}/${cleanedSlug}`; // fallback nếu không khớp
+      return `https://6ixgo.com/${cleanedSlug}`; // fallback nếu không khớp
   }
 
   // Gắn code mới
@@ -42,7 +41,7 @@ export const buildProductHref = (rawSlug, parentCategory) => {
     ? cleanedSlug.replace(oldCode, newCode)
     : `${cleanedSlug}.${newCode}`;
 
-  return `https://${getCountryConfig().marketplaceDomain}/${newSlug}`;
+  return `https://6ixgo.com/${newSlug}`;
 };
 
 const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessages }) => {

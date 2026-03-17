@@ -1,13 +1,12 @@
 import * as signalR from "@microsoft/signalr";
-import { getConfig, getCountryConfig } from '../config/env';
 
 class SignalRService {
   constructor() {
     this.connection = null;
     this.isConnected = false;
-    this.baseUrl = getConfig().notificationApiUrl;
+    this.baseUrl = "https://notification.6ixgo.com";
     this.connectionUrl = `${this.baseUrl}/realtime/notificationHub`;
-    this.currentCountryCode = getCountryConfig().defaultCountry;
+    this.currentCountryCode = "VNM"; // Track current country
     this.accessToken = "InternalChatHistoryTool";
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 3;
