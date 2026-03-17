@@ -43,10 +43,21 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
+    // Lock body scroll (iOS Safari needs both)
+    const scrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
+      window.scrollTo(0, scrollY);
     };
   }, [handleKeyDown]);
 
@@ -116,14 +127,24 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+      className="flex items-center justify-center"
       onClick={handleBackdropClick}
-      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
+      onTouchMove={(e) => e.preventDefault()}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100dvh",
+        zIndex: 9999,
+        backgroundColor: "rgba(0,0,0,0.92)",
+      }}
     >
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition"
+        className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition"
+        style={{ zIndex: 10000 }}
       >
         <X size={24} />
       </button>
@@ -135,8 +156,9 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
           download
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute top-3 right-14 sm:top-4 sm:right-16 z-50 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition"
+          className="absolute top-3 right-14 sm:top-4 sm:right-16 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition"
           onClick={(e) => e.stopPropagation()}
+          style={{ zIndex: 10000 }}
         >
           <Download size={20} />
         </a>
@@ -144,7 +166,7 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
 
       {/* Gallery counter */}
       {showNav && (
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-50 px-3 py-1 rounded-full bg-black/50 text-white text-sm">
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 px-3 py-1 rounded-full bg-black/60 text-white text-sm" style={{ zIndex: 10000 }}>
           {currentIndex + 1} / {gallery.length}
         </div>
       )}
@@ -156,7 +178,8 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
             e.stopPropagation();
             setCurrentIndex((i) => i - 1);
           }}
-          className="absolute left-2 sm:left-4 z-50 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition"
+          className="absolute left-2 sm:left-4 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition"
+          style={{ zIndex: 10000 }}
         >
           <ChevronLeft size={28} />
         </button>
@@ -169,7 +192,8 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
             e.stopPropagation();
             setCurrentIndex((i) => i + 1);
           }}
-          className="absolute right-2 sm:right-4 z-50 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition"
+          className="absolute right-2 sm:right-4 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition"
+          style={{ zIndex: 10000 }}
         >
           <ChevronRight size={28} />
         </button>
@@ -180,7 +204,7 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
 
       {/* Title */}
       {currentTitle && (
-        <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 rounded-full bg-black/50 text-white text-sm max-w-[80vw] truncate">
+        <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/60 text-white text-sm max-w-[80vw] truncate" style={{ zIndex: 10000 }}>
           {currentTitle}
         </div>
       )}
