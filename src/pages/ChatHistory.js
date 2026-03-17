@@ -5,15 +5,17 @@ import ConversationCard from "../components/ConversationCard";
 import signalRService from "../services/signalrService";
 import { useCountryNotifications } from "../hooks/useCountryNotifications";
 import { networkMonitor } from "../utils/networkMonitor";
+import { getCountryConfig } from "../config/env";
 
 const pageSize = 10;
+const countryConfig = getCountryConfig();
 
 const ChatHistory = () => {
   const [conversations, setConversations] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [lateInHours, setLateInHours] = useState(0);
   const [take, setTake] = useState(pageSize);
-  const [countryCode, setCountryCode] = useState("VNM");
+  const [countryCode, setCountryCode] = useState(countryConfig.defaultCountry);
   const [isSignalRConnected, setIsSignalRConnected] = useState(false);
   const isFetchingRef = useRef(false);
   
@@ -320,14 +322,19 @@ const ChatHistory = () => {
         </div>
 
         <div className="flex items-center flex-wrap gap-3 mt-3 justify-between">
-          <select
-            value={countryCode}
-            onChange={(e) => setCountryCode(e.target.value)}
-            className="px-2 py-1.5 border rounded-md bg-white text-gray-800 text-sm"
-          >
-            <option value="VNM">Vietnam</option>
-            <option value="MYS">Malaysia</option>
-          </select>
+          {countryConfig.countries.length > 1 ? (
+            <select
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
+              className="px-2 py-1.5 border rounded-md bg-white text-gray-800 text-sm"
+            >
+              {countryConfig.countries.map((c) => (
+                <option key={c.code} value={c.code}>{c.label}</option>
+              ))}
+            </select>
+          ) : (
+            <span className="text-sm font-medium text-gray-700">{countryConfig.countries[0].label}</span>
+          )}
 
           <div className="flex items-center gap-1.5">
             <label className="text-sm text-gray-600">Late ≥</label>

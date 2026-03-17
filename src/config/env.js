@@ -8,3 +8,24 @@ const ENV = {
 export const getConfig = () => ENV;
 
 export const getTimezoneOffset = () => new Date().getTimezoneOffset();
+
+// Country configuration based on hostname
+const COUNTRY_CONFIG = {
+  'tool.6ixgo.my': {
+    countries: [{ code: 'MYS', label: 'Malaysia' }],
+    defaultCountry: 'MYS',
+  },
+};
+
+const DEFAULT_CONFIG = {
+  countries: [
+    { code: 'VNM', label: 'Vietnam' },
+    { code: 'MYS', label: 'Malaysia' },
+  ],
+  defaultCountry: 'VNM',
+};
+
+export const getCountryConfig = () => {
+  const hostname = window.location.hostname;
+  return COUNTRY_CONFIG[hostname] || DEFAULT_CONFIG;
+};

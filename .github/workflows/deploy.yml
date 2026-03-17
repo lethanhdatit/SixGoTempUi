@@ -38,8 +38,10 @@ jobs:
           script: |
             rm -rf /home/sixgo_admin/FE/Tool/_incoming
             mkdir -p /home/sixgo_admin/FE/Tool/_incoming
+            rm -rf /home/sixgo_admin/FE/ToolMY/_incoming
+            mkdir -p /home/sixgo_admin/FE/ToolMY/_incoming
 
-      - name: Copy build to VM
+      - name: Copy build to VM (Vietnam)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -48,6 +50,18 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: build/*
           target: /home/sixgo_admin/FE/Tool/_incoming
+          strip_components: 1
+          rm: false
+
+      - name: Copy build to VM (Malaysia)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: build/*
+          target: /home/sixgo_admin/FE/ToolMY/_incoming
           strip_components: 1
           rm: false
 
@@ -61,26 +75,42 @@ jobs:
           script: |
             set -e
 
+            # --- Vietnam (tool.6ixgo.com) ---
             DEPLOY_DIR=~/FE/Tool
             INCOMING="$DEPLOY_DIR/_incoming"
             LIVE="$DEPLOY_DIR/live"
             APP_NAME="tool_6ixgo"
             PORT=3100
 
-            # Atomic swap
             rm -rf "$LIVE"
             mv "$INCOMING" "$LIVE"
 
-            # Ensure serve is installed globally
             command -v serve >/dev/null 2>&1 || sudo npm install -g serve
 
-            # Start or restart PM2 process
             if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
               pm2 restart "$APP_NAME" --update-env
             else
               pm2 serve "$LIVE" "$PORT" --name "$APP_NAME" --spa
             fi
 
+            echo "Deployed $APP_NAME on port $PORT"
+
+            # --- Malaysia (tool.6ixgo.my) ---
+            DEPLOY_DIR_MY=~/FE/ToolMY
+            INCOMING_MY="$DEPLOY_DIR_MY/_incoming"
+            LIVE_MY="$DEPLOY_DIR_MY/live"
+            APP_NAME_MY="tool_6ixgo_my"
+            PORT_MY=3102
+
+            rm -rf "$LIVE_MY"
+            mv "$INCOMING_MY" "$LIVE_MY"
+
+            if pm2 describe "$APP_NAME_MY" > /dev/null 2>&1; then
+              pm2 restart "$APP_NAME_MY" --update-env
+            else
+              pm2 serve "$LIVE_MY" "$PORT_MY" --name "$APP_NAME_MY" --spa
+            fi
+
             pm2 save
 
-            echo "Deployed successfully — $APP_NAME on port $PORT"
+            echo "Deployed $APP_NAME_MY on port $PORT_MY"
