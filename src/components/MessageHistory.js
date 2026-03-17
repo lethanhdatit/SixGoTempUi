@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getConversationMessages } from "../services/chatService";
 import { CopyableField } from "./CopyableField";
+import { PreviewableImage, PreviewableFile } from "./MediaPreview";
 import { getCountryConfig } from "../config/env";
 
 export const buildProductHref = (rawSlug, parentCategory) => {
@@ -219,20 +220,16 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                               {msg.jobInfo.images
                                 .sort((a, b) => a.displayOrder - b.displayOrder)
                                 .map((img) => (
-                                  <a
-                                    key={img.id}
-                                    href={img.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-block mr-2"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <img
-                                      src={img.url}
+                                  <span key={img.id} className="inline-block mr-2">
+                                    <PreviewableImage
+                                      url={img.url}
                                       alt={img.title || "Job image"}
                                       className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                      gallery={msg.jobInfo.images
+                                        .sort((a, b) => a.displayOrder - b.displayOrder)
+                                        .map((i) => ({ url: i.url, title: i.title }))}
                                     />
-                                  </a>
+                                  </span>
                                 ))}
                             </div>
                           )}
@@ -271,20 +268,16 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                               {msg.restaurantInfo.images
                                 .sort((a, b) => a.displayOrder - b.displayOrder)
                                 .map((img) => (
-                                  <a
-                                    key={img.id}
-                                    href={img.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-block mr-2"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <img
-                                      src={img.url}
+                                  <span key={img.id} className="inline-block mr-2">
+                                    <PreviewableImage
+                                      url={img.url}
                                       alt={img.title || "Restaurant image"}
                                       className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                      gallery={msg.restaurantInfo.images
+                                        .sort((a, b) => a.displayOrder - b.displayOrder)
+                                        .map((i) => ({ url: i.url, title: i.title }))}
                                     />
-                                  </a>
+                                  </span>
                                 ))}
                             </div>
                           )}
@@ -298,41 +291,33 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                                 /\.(jpe?g|png|gif|bmp|webp|svg|tiff?|heic)$/i.test(
                                   att.url
                                 );
+                              const imageGallery = msg.attachments
+                                .filter((a) => /\.(jpe?g|png|gif|bmp|webp|svg|tiff?|heic)$/i.test(a.url))
+                                .sort((a, b) => a.displayOrder - b.displayOrder)
+                                .map((a) => ({ url: a.url, title: a.displayName }));
                               return (
                                 <span
                                   key={att.id}
                                   className="mr-2 inline-block"
                                 >
                                   {isImage ? (
-                                    <a
-                                      href={att.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-block"
-                                    >
-                                      <img
-                                        src={att.url}
-                                        alt={
-                                          att.displayName ||
-                                          `Attachment ${idx + 1}`
-                                        }
-                                        className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
-                                      />
-                                    </a>
+                                    <PreviewableImage
+                                      url={att.url}
+                                      alt={
+                                        att.displayName ||
+                                        `Attachment ${idx + 1}`
+                                      }
+                                      className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                      gallery={imageGallery.length > 1 ? imageGallery : undefined}
+                                    />
                                   ) : (
-                                    <a
-                                      href={att.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      download
-                                      className="flex items-center space-x-1 text-blue-600 underline hover:text-blue-800"
-                                    >
-                                      📎
-                                      <span>
-                                        {att.displayName ||
-                                          `Attachment ${idx + 1}`}
-                                      </span>
-                                    </a>
+                                    <PreviewableFile
+                                      url={att.url}
+                                      displayName={
+                                        att.displayName ||
+                                        `Attachment ${idx + 1}`
+                                      }
+                                    />
                                   )}
                                 </span>
                               );
