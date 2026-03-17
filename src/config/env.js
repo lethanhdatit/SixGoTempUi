@@ -14,6 +14,7 @@ const COUNTRY_CONFIG = {
   'tool.6ixgo.my': {
     countries: [{ code: 'MYS', label: 'Malaysia' }],
     defaultCountry: 'MYS',
+    identityBasePath: '/MYS',
   },
 };
 
@@ -23,6 +24,7 @@ const DEFAULT_CONFIG = {
     { code: 'MYS', label: 'Malaysia' },
   ],
   defaultCountry: 'VNM',
+  identityBasePath: '',
 };
 
 export const getCountryConfig = () => {

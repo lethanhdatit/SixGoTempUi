@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getConfig, getTimezoneOffset } from '../config/env';
+import { getConfig, getTimezoneOffset, getCountryConfig } from '../config/env';
 
 const AUTH_KEY = '6ixgo_auth_tool';
 const DEFAULT_LOCALE_CODE = 'eng';
@@ -101,6 +101,9 @@ const createApiInstance = (getBaseUrl) => {
   return instance;
 };
 
-export const identityApi = createApiInstance(() => getConfig().identityApiUrl);
+export const identityApi = createApiInstance(() => {
+  const basePath = getCountryConfig().identityBasePath || '';
+  return getConfig().identityApiUrl + basePath;
+});
 export const adminApi = createApiInstance(() => getConfig().adminApiUrl);
 export const notificationApi = createApiInstance(() => getConfig().notificationApiUrl);
