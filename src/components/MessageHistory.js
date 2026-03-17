@@ -153,12 +153,30 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                             rel="noopener noreferrer"
                             className="text-blue-600 underline hover:text-blue-800"
                           >
-                            {msg.orderInfo.productInfo.name}
+                            [{msg.orderInfo.productInfo.metaType}] {msg.orderInfo.productInfo.name}
                           </a>{" "}
                           <CopyableField
                             value={msg.orderInfo.productInfo.productId}
                             label="Product Id"
                           />{" "}
+                          {msg.orderInfo.productInfo.images && msg.orderInfo.productInfo.images.length > 0 && (
+                            <div className="mt-1">
+                              {msg.orderInfo.productInfo.images
+                                .sort((a, b) => a.displayOrder - b.displayOrder)
+                                .map((img) => (
+                                  <span key={img.id} className="inline-block mr-2">
+                                    <PreviewableImage
+                                      url={img.url}
+                                      alt={img.title || "Product image"}
+                                      className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                      gallery={msg.orderInfo.productInfo.images
+                                        .sort((a, b) => a.displayOrder - b.displayOrder)
+                                        .map((i) => ({ url: i.url, title: i.title }))}
+                                    />
+                                  </span>
+                                ))}
+                            </div>
+                          )}
                         </>
                       ) : msg.productInfo ? (
                         <>
@@ -171,12 +189,30 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                             rel="noopener noreferrer"
                             className="text-blue-600 underline hover:text-blue-800"
                           >
-                            {msg.productInfo.name}
+                            [{msg.productInfo.metaType}] {msg.productInfo.name}
                           </a>
                           <CopyableField
                             value={msg.productInfo.productId}
                             label="Product Id"
                           />
+                          {msg.productInfo.images && msg.productInfo.images.length > 0 && (
+                            <div className="mt-1">
+                              {msg.productInfo.images
+                                .sort((a, b) => a.displayOrder - b.displayOrder)
+                                .map((img) => (
+                                  <span key={img.id} className="inline-block mr-2">
+                                    <PreviewableImage
+                                      url={img.url}
+                                      alt={img.title || "Product image"}
+                                      className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                      gallery={msg.productInfo.images
+                                        .sort((a, b) => a.displayOrder - b.displayOrder)
+                                        .map((i) => ({ url: i.url, title: i.title }))}
+                                    />
+                                  </span>
+                                ))}
+                            </div>
+                          )}
                         </>
                       ) : msg.jobInfo ? (
                         <>
