@@ -46,6 +46,16 @@ export const buildProductHref = (rawSlug, parentCategory) => {
   return `${marketplaceDomain}/${newSlug}`;
 };
 
+const buildRestaurantHref = (title, autoId) => {
+  const { marketplaceDomain } = getCountryConfig();
+  const slug = (title || "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${marketplaceDomain}/${slug}.ri${autoId}`;
+};
+
 const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessages }) => {
   const [messages, setMessages] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -220,6 +230,58 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                                     <img
                                       src={img.url}
                                       alt={img.title || "Job image"}
+                                      className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+                                    />
+                                  </a>
+                                ))}
+                            </div>
+                          )}
+                        </>
+                      ) : msg.restaurantInfo ? (
+                        <>
+                          <a
+                            href={buildRestaurantHref(msg.restaurantInfo.title, msg.restaurantInfo.autoId)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-600 underline hover:text-blue-800"
+                          >
+                            {msg.restaurantInfo.title}
+                          </a>
+                          <CopyableField
+                            value={msg.restaurantInfo.restaurantId}
+                            label="Restaurant Id"
+                          />
+                          {msg.restaurantInfo.status && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium mr-1">Status:</span>
+                              <b style={{ color: msg.restaurantInfo.status === "published" ? "green" : "orange" }}>
+                                {msg.restaurantInfo.status}
+                              </b>
+                            </div>
+                          )}
+                          {msg.restaurantInfo.categories && msg.restaurantInfo.categories.length > 0 && (
+                            <div className="text-sm text-gray-600">
+                              <span className="font-medium mr-1">Categories:</span>
+                              {msg.restaurantInfo.categories.map((c) => c.name).join(", ")}
+                            </div>
+                          )}
+                          {msg.restaurantInfo.images && msg.restaurantInfo.images.length > 0 && (
+                            <div className="mt-1">
+                              {msg.restaurantInfo.images
+                                .sort((a, b) => a.displayOrder - b.displayOrder)
+                                .map((img) => (
+                                  <a
+                                    key={img.id}
+                                    href={img.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block mr-2"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <img
+                                      src={img.url}
+                                      alt={img.title || "Restaurant image"}
                                       className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
                                     />
                                   </a>
