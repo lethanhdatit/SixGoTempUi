@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import ReactDOM from "react-dom";
 import { X, Download, ChevronLeft, ChevronRight } from "lucide-react";
 
 const isImageUrl = (url) =>
@@ -113,10 +114,11 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
 
   const showNav = gallery && gallery.length > 1;
 
-  return (
+  return ReactDOM.createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
       onClick={handleBackdropClick}
+      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
     >
       {/* Close button */}
       <button
@@ -182,7 +184,8 @@ const MediaPreview = ({ url, title, onClose, gallery }) => {
           {currentTitle}
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 };
 
