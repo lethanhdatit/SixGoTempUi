@@ -103,6 +103,13 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
     fetchMessages(nextPage);
   };
 
+  const mapMetaTypeByCategory = (code) => {
+    if(code === "CTG10000000001") return "Class";
+    if(code === "CTG10000000002") return "Service";
+    if(code === "CTG10000000003") return "Item";
+    return "Undefined";
+  };
+
   return (
     <div ref={containerRef} className="bg-gray-100 p-2 sm:p-4 mt-3 rounded-md shadow-inner overflow-hidden">
       <br></br>
@@ -153,7 +160,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                             rel="noopener noreferrer"
                             className="text-blue-600 underline hover:text-blue-800"
                           >
-                            [{msg.orderInfo.productInfo.metaType}] {msg.orderInfo.productInfo.name}
+                            [{mapMetaTypeByCategory(msg.orderInfo.productInfo.parentCategoryCode)}] {msg.orderInfo.productInfo.name}
                           </a>{" "}
                           <CopyableField
                             value={msg.orderInfo.productInfo.productId}
@@ -189,7 +196,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
                             rel="noopener noreferrer"
                             className="text-blue-600 underline hover:text-blue-800"
                           >
-                            [{msg.productInfo.metaType}] {msg.productInfo.name}
+                            [{mapMetaTypeByCategory(msg.productInfo.parentCategoryCode)}] {msg.productInfo.name}
                           </a>
                           <CopyableField
                             value={msg.productInfo.productId}
