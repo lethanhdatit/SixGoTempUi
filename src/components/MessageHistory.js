@@ -112,7 +112,7 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
 
   return (
     <div ref={containerRef} className="bg-gray-100 p-2 sm:p-4 mt-3 rounded-md shadow-inner overflow-hidden">
-      <br></br>
+      <div className="max-h-[50vh] sm:max-h-[55vh] md:max-h-[60vh] lg:max-h-[65vh] overflow-y-auto scroll-smooth pr-1">
       {messages.map((msg) => {
         var sender =
           conversation.sender?.userId === msg.sender?.userId
@@ -379,7 +379,8 @@ const MessageHistory = ({ conversationId, conversation, countryCode, toggleMessa
           </div>
         );
       })}
-      <div className="flex items-center mt-2">
+      </div>
+      <div className="flex items-center mt-2 sticky bottom-0 bg-gray-100 pt-1">
         <div>
           {hasMore ? (
             <button

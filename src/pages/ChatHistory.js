@@ -17,6 +17,7 @@ const ChatHistory = () => {
   const [take, setTake] = useState(pageSize);
   const [countryCode, setCountryCode] = useState(countryConfig.defaultCountry);
   const [isSignalRConnected, setIsSignalRConnected] = useState(false);
+  const [selectedConversationId, setSelectedConversationId] = useState(null);
   const isFetchingRef = useRef(false);
   
   // Initialize country notifications hook
@@ -358,7 +359,13 @@ const ChatHistory = () => {
         endMessage={<p className="text-center text-gray-600 mt-4">No more conversations</p>}
       >
         {conversations.map((conversation) => (
-          <ConversationCard key={conversation.conversationId} conversation={conversation} countryCode={countryCode} />
+          <ConversationCard
+            key={conversation.conversationId}
+            conversation={conversation}
+            countryCode={countryCode}
+            isSelected={selectedConversationId === conversation.conversationId}
+            onSelect={setSelectedConversationId}
+          />
         ))}
       </InfiniteScroll>
     </div>

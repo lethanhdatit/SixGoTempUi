@@ -3,7 +3,7 @@ import MessageHistory from "./MessageHistory";
 import { CopyableField } from "./CopyableField";
 import { buildProductHref } from "./MessageHistory";
 
-const ConversationCard = ({ conversation, countryCode }) => {
+const ConversationCard = ({ conversation, countryCode, isSelected, onSelect }) => {
   const { sender, receiver, message, productInfo } = conversation;
   const [showMessages, setShowMessages] = useState(false);
   const cardRef = useRef(null);
@@ -15,6 +15,9 @@ const ConversationCard = ({ conversation, countryCode }) => {
           cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 0);
       }
+      if (!prev) {
+        onSelect?.(conversation.conversationId);
+      }
       return !prev;
     });
   };
@@ -22,7 +25,11 @@ const ConversationCard = ({ conversation, countryCode }) => {
   const getRole = (roles) => (roles.includes("Seller") ? "Seller" : "Buyer");
 
   return (
-    <div ref={cardRef} className="conversation-card bg-white shadow-lg rounded-lg p-3 sm:p-5 mb-3 sm:mb-5">
+    <div ref={cardRef} className={`conversation-card rounded-lg p-3 sm:p-5 mb-3 sm:mb-5 transition-all duration-200 border-l-4 ${
+      isSelected
+        ? 'bg-blue-50 shadow-xl border-l-blue-500 ring-1 ring-blue-200'
+        : 'bg-white shadow-lg border-l-transparent hover:shadow-xl hover:border-l-gray-300 hover:bg-gray-50'
+    }`}>
       <div onClick={toggleMessages} className="cursor-pointer">
         <div
           className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-7"
