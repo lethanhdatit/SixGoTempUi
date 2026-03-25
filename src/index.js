@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AppHeader from './components/AppHeader';
 import LoginPage from './pages/LoginPage';
 import ChatHistory from './pages/ChatHistory';
+import UpdateBanner from './components/UpdateBanner';
 
 const AppLayout = ({ children }) => (
   <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f0f2f5' }}>
@@ -19,6 +20,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
+        <UpdateBanner />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route

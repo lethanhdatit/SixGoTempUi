@@ -8,18 +8,13 @@ const ConversationCard = ({ conversation, countryCode, isSelected, onSelect }) =
   const [showMessages, setShowMessages] = useState(false);
   const cardRef = useRef(null);
 
-  const toggleMessages = () => {
-    setShowMessages((prev) => {
-      if (prev) {
-        setTimeout(() => {
-          cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 0);
-      }
-      if (!prev) {
-        onSelect?.(conversation.conversationId);
-      }
-      return !prev;
-    });
+  const openMessages = () => {
+    onSelect?.(conversation.conversationId);
+    setShowMessages(true);
+  };
+
+  const closeMessages = () => {
+    setShowMessages(false);
   };
 
   const getRole = (roles) => (roles.includes("Seller") ? "Seller" : "Buyer");
@@ -30,7 +25,7 @@ const ConversationCard = ({ conversation, countryCode, isSelected, onSelect }) =
         ? 'bg-blue-50 shadow-xl border-l-blue-500 ring-1 ring-blue-200'
         : 'bg-white shadow-lg border-l-transparent hover:shadow-xl hover:border-l-gray-300 hover:bg-gray-50'
     }`}>
-      <div onClick={toggleMessages} className="cursor-pointer">
+      <div onClick={openMessages} className="cursor-pointer">
         <div
           className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-7"
         >
@@ -123,16 +118,14 @@ const ConversationCard = ({ conversation, countryCode, isSelected, onSelect }) =
         </div>
       </div>
 
-      {
-        showMessages && (
+      {showMessages && (
           <MessageHistory
             conversationId={conversation.conversationId}
             conversation={conversation}
             countryCode={countryCode}
-            toggleMessages={toggleMessages}
+            onClose={closeMessages}
           />
-        )
-      }
+        )}
     </div >
   );
 };
