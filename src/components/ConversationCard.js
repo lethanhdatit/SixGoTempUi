@@ -123,6 +123,7 @@ const ConversationCard = ({ conversation, countryCode, isSelected, onSelect }) =
             conversationId={conversation.conversationId}
             conversation={conversation}
             countryCode={countryCode}
+            autoScroll={true}
             onClose={closeMessages}
           />
         )}

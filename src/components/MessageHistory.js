@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import ReactDOM from "react-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { X } from "lucide-react";
 import { getConversationMessages } from "../services/chatService";
 import { CopyableField } from "./CopyableField";
@@ -59,14 +60,19 @@ const buildRestaurantHref = (title, autoId) => {
   return `${marketplaceDomain}/${slug}.ri${autoId}`;
 };
 
-const MessageHistory = ({ conversationId, conversation, countryCode, onClose }) => {
+const MessageHistory = ({ conversationId, conversation, countryCode, onClose, autoScroll = false }) => {
   const [messages, setMessages] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
+  const isFetchingRef = useRef(false);
   const pageSize = 20;
 
   const fetchMessages = useCallback(async (page = 1) => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    setIsLoading(true);
     try {
       const result = await getConversationMessages(
         conversationId,
@@ -85,6 +91,9 @@ const MessageHistory = ({ conversationId, conversation, countryCode, onClose }) 
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      isFetchingRef.current = false;
+      setIsLoading(false);
     }
   }, [conversationId, countryCode]);
 
@@ -125,6 +134,160 @@ const MessageHistory = ({ conversationId, conversation, countryCode, onClose }) 
   const senderName = (s) =>
     `${s.firstName ?? ""}${s.middleName ?? ""}${s.lastName ?? ""}` || s.email;
 
+  const renderImageGallery = (images, altPrefix) => {
+    if (!images || images.length === 0) return null;
+    const sorted = [...images].sort((a, b) => a.displayOrder - b.displayOrder);
+    const gallery = sorted.map((i) => ({ url: i.url, title: i.title }));
+    return (
+      <div className="mt-1">
+        {sorted.map((img) => (
+          <span key={img.id} className="inline-block mr-2">
+            <PreviewableImage url={img.url} alt={img.title || `${altPrefix} image`}
+              className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+              gallery={gallery} />
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  const renderLink = (href, label, extra) => (
+    <a href={href} target="_blank" rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="text-blue-600 underline hover:text-blue-800">
+      {label}
+    </a>
+  );
+
+  const renderProductBlock = (productInfo, orderNo) => {
+    if (!productInfo) return "[No content]";
+    return (
+    <>
+      {orderNo && <><CopyableField value={orderNo} label="Order No" />{" "}</>}
+      {renderLink(
+        buildProductHref(productInfo.slug, productInfo.parentCategoryCode),
+        <>[{mapMetaTypeByCategory(productInfo.parentCategoryCode)}] {productInfo.name}</>
+      )}{" "}
+      <CopyableField value={productInfo.productId} label="Product Id" />
+      {renderImageGallery(productInfo.images, "Product")}
+    </>
+  )
+  };
+
+  const renderJobBlock = (jobInfo) => (
+    <>
+      {renderLink(
+        `${getCountryConfig().marketplaceDomain}/jobGo/${jobInfo.jobId}`,
+        jobInfo.title
+      )}
+      <CopyableField value={jobInfo.jobId} label="Job Id" />
+      {jobInfo.companyName && (
+        <div className="text-sm text-gray-600">
+          <span className="font-medium mr-2">Company:</span>
+          {jobInfo.companyName}
+        </div>
+      )}
+      <div className="text-sm text-gray-600">
+        {jobInfo.employmentType && (
+          <span className="mr-3">
+            <span className="font-medium mr-1">Type:</span>
+            {jobInfo.employmentType}
+          </span>
+        )}
+        {jobInfo.status && (
+          <span>
+            <span className="font-medium mr-1">Status:</span>
+            <b style={{ color: jobInfo.status === "open" ? "green" : "orange" }}>
+              {jobInfo.status}
+            </b>
+          </span>
+        )}
+      </div>
+      {renderImageGallery(jobInfo.images, "Job")}
+    </>
+  );
+
+  const renderRestaurantBlock = (info) => (
+    <>
+      {renderLink(
+        buildRestaurantHref(info.title, info.autoId),
+        info.title
+      )}
+      <CopyableField value={info.restaurantId} label="Restaurant Id" />
+      {info.status && (
+        <div className="text-sm text-gray-600">
+          <span className="font-medium mr-1">Status:</span>
+          <b style={{ color: info.status === "published" ? "green" : "orange" }}>
+            {info.status}
+          </b>
+        </div>
+      )}
+      {info.categories && info.categories.length > 0 && (
+        <div className="text-sm text-gray-600">
+          <span className="font-medium mr-1">Categories:</span>
+          {info.categories.map((c) => c.name).join(", ")}
+        </div>
+      )}
+      {renderImageGallery(info.images, "Restaurant")}
+    </>
+  );
+
+  const renderAttachments = (attachments) => {
+    const sorted = [...attachments].sort((a, b) => a.displayOrder - b.displayOrder);
+    const imageGallery = sorted
+      .filter((a) => /\.(jpe?g|png|gif|bmp|webp|svg|tiff?|heic)$/i.test(a.url))
+      .map((a) => ({ url: a.url, title: a.displayName }));
+    return sorted.map((att, idx) => {
+      const isImage = /\.(jpe?g|png|gif|bmp|webp|svg|tiff?|heic)$/i.test(att.url);
+      return (
+        <span key={att.id} className="mr-2 inline-block">
+          {isImage ? (
+            <PreviewableImage url={att.url}
+              alt={att.displayName || `Attachment ${idx + 1}`}
+              className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
+              gallery={imageGallery.length > 1 ? imageGallery : undefined} />
+          ) : (
+            <PreviewableFile url={att.url}
+              displayName={att.displayName || `Attachment ${idx + 1}`} />
+          )}
+        </span>
+      );
+    });
+  };
+
+  const renderMessageContent = (msg) => {
+    if (msg.orderInfo) return renderProductBlock(msg.orderInfo.productInfo, msg.orderInfo.orderNo);
+    if (msg.productInfo) return renderProductBlock(msg.productInfo);
+    if (msg.jobInfo) return renderJobBlock(msg.jobInfo);
+    if (msg.restaurantInfo) return renderRestaurantBlock(msg.restaurantInfo);
+    if (msg.attachments) return renderAttachments(msg.attachments);
+    return "[No content]";
+  };
+
+  const renderMessage = (msg, sender) => (
+    <div key={msg.messageId} className="mb-3 pb-3 border-b border-gray-100 last:border-b-0">
+      <div>
+        <p>
+          <b className="text-gray-900">
+            <span>{senderName(sender)}</span>
+            {"  "}
+            <span className="text-xs text-gray-400 font-normal">
+              {new Date(msg.sentTS).toLocaleString()}
+            </span>
+          </b>
+          {msg.message && <CopyableField value={msg.message} />}
+        </p>
+        {!msg.message && (
+          <span className="text-gray-800">
+            <div className="border border-gray-200 rounded-lg p-3 mt-2">
+              {renderMessageContent(msg)}
+            </div>
+          </span>
+        )}
+      </div>
+    </div>
+  );
+
   const modal = (
     <div
       className="fixed inset-0 z-[9990] flex items-center justify-center p-2 sm:p-4"
@@ -159,219 +322,54 @@ const MessageHistory = ({ conversationId, conversation, countryCode, onClose }) 
         </div>
 
         {/* Scrollable message area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 sm:px-5 py-3 scroll-smooth">
-          {messages.length === 0 && (
+        <div id="message-scroll-container" ref={scrollRef} className="flex-1 overflow-y-auto px-3 sm:px-5 py-3 scroll-smooth">
+          {messages.length === 0 && isLoading && (
             <div className="flex items-center justify-center h-32 text-gray-400 text-sm">
-              Loading messages...
+              Loading...
             </div>
           )}
-          {messages.map((msg) => {
-            var sender =
-              conversation.sender?.userId === msg.sender?.userId
-                ? conversation.sender
-                : conversation.receiver;
-
-            return (
-              <div key={msg.messageId} className="mb-3 pb-3 border-b border-gray-100 last:border-b-0">
-                <div>
-                  <p>
-                    <b className="text-gray-900">
-                      <span>{senderName(sender)}</span>
-                      {"  "}
-                      <span className="text-xs text-gray-400 font-normal">
-                        {new Date(msg.sentTS).toLocaleString()}
-                      </span>
-                    </b>
-                    {msg.message && <CopyableField value={msg.message} />}
-                  </p>
-
-                  <span className="text-gray-800">
-                    {!msg.message && (
-                      (
-                        <div className="border border-gray-200 rounded-lg p-3 mt-2">
-                          {msg.orderInfo ? (
-                            <>
-                              <CopyableField value={msg.orderInfo.orderNo} label="Order No" />{" "}
-                              <a href={buildProductHref(msg.orderInfo.productInfo.slug, msg.orderInfo.productInfo.parentCategoryCode)}
-                                target="_blank" rel="noopener noreferrer"
-                                className="text-blue-600 underline hover:text-blue-800">
-                                [{mapMetaTypeByCategory(msg.orderInfo.productInfo.parentCategoryCode)}] {msg.orderInfo.productInfo.name}
-                              </a>{" "}
-                              <CopyableField value={msg.orderInfo.productInfo.productId} label="Product Id" />{" "}
-                              {msg.orderInfo.productInfo.images && msg.orderInfo.productInfo.images.length > 0 && (
-                                <div className="mt-1">
-                                  {msg.orderInfo.productInfo.images
-                                    .sort((a, b) => a.displayOrder - b.displayOrder)
-                                    .map((img) => (
-                                      <span key={img.id} className="inline-block mr-2">
-                                        <PreviewableImage url={img.url} alt={img.title || "Product image"}
-                                          className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
-                                          gallery={msg.orderInfo.productInfo.images
-                                            .sort((a, b) => a.displayOrder - b.displayOrder)
-                                            .map((i) => ({ url: i.url, title: i.title }))} />
-                                      </span>
-                                    ))}
-                                </div>
-                              )}
-                            </>
-                          ) : msg.productInfo ? (
-                            <>
-                              <a href={buildProductHref(msg.productInfo.slug, msg.productInfo.parentCategoryCode)}
-                                target="_blank" rel="noopener noreferrer"
-                                className="text-blue-600 underline hover:text-blue-800">
-                                [{mapMetaTypeByCategory(msg.productInfo.parentCategoryCode)}] {msg.productInfo.name}
-                              </a>
-                              <CopyableField value={msg.productInfo.productId} label="Product Id" />
-                              {msg.productInfo.images && msg.productInfo.images.length > 0 && (
-                                <div className="mt-1">
-                                  {msg.productInfo.images
-                                    .sort((a, b) => a.displayOrder - b.displayOrder)
-                                    .map((img) => (
-                                      <span key={img.id} className="inline-block mr-2">
-                                        <PreviewableImage url={img.url} alt={img.title || "Product image"}
-                                          className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
-                                          gallery={msg.productInfo.images
-                                            .sort((a, b) => a.displayOrder - b.displayOrder)
-                                            .map((i) => ({ url: i.url, title: i.title }))} />
-                                      </span>
-                                    ))}
-                                </div>
-                              )}
-                            </>
-                          ) : msg.jobInfo ? (
-                            <>
-                              <a href={`${getCountryConfig().marketplaceDomain}/jobGo/${msg.jobInfo.jobId}`}
-                                target="_blank" rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-blue-600 underline hover:text-blue-800">
-                                {msg.jobInfo.title}
-                              </a>
-                              <CopyableField value={msg.jobInfo.jobId} label="Job Id" />
-                              {msg.jobInfo.companyName && (
-                                <div className="text-sm text-gray-600">
-                                  <span className="font-medium mr-2">Company:</span>
-                                  {msg.jobInfo.companyName}
-                                </div>
-                              )}
-                              <div className="text-sm text-gray-600">
-                                {msg.jobInfo.employmentType && (
-                                  <span className="mr-3">
-                                    <span className="font-medium mr-1">Type:</span>
-                                    {msg.jobInfo.employmentType}
-                                  </span>
-                                )}
-                                {msg.jobInfo.status && (
-                                  <span>
-                                    <span className="font-medium mr-1">Status:</span>
-                                    <b style={{ color: msg.jobInfo.status === "open" ? "green" : "orange" }}>
-                                      {msg.jobInfo.status}
-                                    </b>
-                                  </span>
-                                )}
-                              </div>
-                              {msg.jobInfo.images && msg.jobInfo.images.length > 0 && (
-                                <div className="mt-1">
-                                  {msg.jobInfo.images
-                                    .sort((a, b) => a.displayOrder - b.displayOrder)
-                                    .map((img) => (
-                                      <span key={img.id} className="inline-block mr-2">
-                                        <PreviewableImage url={img.url} alt={img.title || "Job image"}
-                                          className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
-                                          gallery={msg.jobInfo.images
-                                            .sort((a, b) => a.displayOrder - b.displayOrder)
-                                            .map((i) => ({ url: i.url, title: i.title }))} />
-                                      </span>
-                                    ))}
-                                </div>
-                              )}
-                            </>
-                          ) : msg.restaurantInfo ? (
-                            <>
-                              <a href={buildRestaurantHref(msg.restaurantInfo.title, msg.restaurantInfo.autoId)}
-                                target="_blank" rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-blue-600 underline hover:text-blue-800">
-                                {msg.restaurantInfo.title}
-                              </a>
-                              <CopyableField value={msg.restaurantInfo.restaurantId} label="Restaurant Id" />
-                              {msg.restaurantInfo.status && (
-                                <div className="text-sm text-gray-600">
-                                  <span className="font-medium mr-1">Status:</span>
-                                  <b style={{ color: msg.restaurantInfo.status === "published" ? "green" : "orange" }}>
-                                    {msg.restaurantInfo.status}
-                                  </b>
-                                </div>
-                              )}
-                              {msg.restaurantInfo.categories && msg.restaurantInfo.categories.length > 0 && (
-                                <div className="text-sm text-gray-600">
-                                  <span className="font-medium mr-1">Categories:</span>
-                                  {msg.restaurantInfo.categories.map((c) => c.name).join(", ")}
-                                </div>
-                              )}
-                              {msg.restaurantInfo.images && msg.restaurantInfo.images.length > 0 && (
-                                <div className="mt-1">
-                                  {msg.restaurantInfo.images
-                                    .sort((a, b) => a.displayOrder - b.displayOrder)
-                                    .map((img) => (
-                                      <span key={img.id} className="inline-block mr-2">
-                                        <PreviewableImage url={img.url} alt={img.title || "Restaurant image"}
-                                          className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
-                                          gallery={msg.restaurantInfo.images
-                                            .sort((a, b) => a.displayOrder - b.displayOrder)
-                                            .map((i) => ({ url: i.url, title: i.title }))} />
-                                      </span>
-                                    ))}
-                                </div>
-                              )}
-                            </>
-                          ) : msg.attachments ? (
-                            <>
-                              {msg.attachments
-                                .sort((a, b) => a.displayOrder - b.displayOrder)
-                                .map((att, idx) => {
-                                  const isImage = /\.(jpe?g|png|gif|bmp|webp|svg|tiff?|heic)$/i.test(att.url);
-                                  const imageGallery = msg.attachments
-                                    .filter((a) => /\.(jpe?g|png|gif|bmp|webp|svg|tiff?|heic)$/i.test(a.url))
-                                    .sort((a, b) => a.displayOrder - b.displayOrder)
-                                    .map((a) => ({ url: a.url, title: a.displayName }));
-                                  return (
-                                    <span key={att.id} className="mr-2 inline-block">
-                                      {isImage ? (
-                                        <PreviewableImage url={att.url}
-                                          alt={att.displayName || `Attachment ${idx + 1}`}
-                                          className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition"
-                                          gallery={imageGallery.length > 1 ? imageGallery : undefined} />
-                                      ) : (
-                                        <PreviewableFile url={att.url}
-                                          displayName={att.displayName || `Attachment ${idx + 1}`} />
-                                      )}
-                                    </span>
-                                  );
-                                })}
-                            </>
-                          ) : (
-                            "[No content]"
-                          )}
-                        </div>
-                      ) || "[No content]"
-                    )}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+          {autoScroll ? (
+            <InfiniteScroll
+              dataLength={messages.length}
+              next={loadMore}
+              hasMore={hasMore}
+              loader={messages.length > 0 && <p className="text-center text-gray-400 text-sm py-2">Loading...</p>}
+              // endMessage={!isLoading && pageNumber > 1 && messages.length > 0 && <p className="text-center text-gray-400 text-sm py-2">No more messages</p>}
+              scrollableTarget="message-scroll-container"
+            >
+              {messages.map((msg) => {
+                var sender =
+                  conversation.sender?.userId === msg.sender?.userId
+                    ? conversation.sender
+                    : conversation.receiver;
+                return renderMessage(msg, sender);
+              })}
+            </InfiniteScroll>
+          ) : (
+            <>
+              {messages.map((msg) => {
+                var sender =
+                  conversation.sender?.userId === msg.sender?.userId
+                    ? conversation.sender
+                    : conversation.receiver;
+                return renderMessage(msg, sender);
+              })}
+            </>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 shrink-0 bg-gray-50 rounded-b-xl sm:rounded-b-2xl">
+        <div className="flex items-center justify-between px-4 py-3 shrink-0 bg-gray-50 rounded-b-xl sm:rounded-b-2xl">
           <div>
-            {hasMore ? (
-              <button onClick={loadMore}
-                className="text-blue-600 hover:underline text-sm font-medium">
-                Load more ↓
-              </button>
-            ) : (
-              <span className="text-sm text-gray-400">No more messages</span>
+            {!autoScroll && (
+              hasMore ? (
+                <button onClick={loadMore}
+                  className="text-blue-600 hover:underline text-sm font-medium">
+                  Load more ↓
+                </button>
+              ) : (
+                !isLoading && pageNumber > 1 && <span className="text-sm text-gray-400">No more messages</span>
+              )
             )}
           </div>
           <button
