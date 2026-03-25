@@ -1,26 +1,41 @@
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 
-const urlRegex = /(https?:\/\/[^\s]+)/g;
+const renderRichContent = (text) => {
+  // Matches: URLs, **bold**, *italic*
+  const tokenRegex = /(https?:\/\/[^\s]+)|\*\*(.+?)\*\*|\*([^*]+?)\*/g;
 
-const renderWithLinks = (text) => {
-  const parts = text.split(urlRegex);
-  return parts.map((part, i) =>
-    urlRegex.test(part) ? (
-      <a
-        key={i}
-        href={part}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className="text-blue-600 underline hover:text-blue-800"
-      >
-        {part}
-      </a>
-    ) : (
-      <span key={i}>{part}</span>
-    )
-  );
+  const result = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = tokenRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      result.push(<span key={`t${lastIndex}`}>{text.slice(lastIndex, match.index)}</span>);
+    }
+
+    if (match[1]) {
+      result.push(
+        <a key={`u${match.index}`} href={match[1]} target="_blank" rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="text-blue-600 underline hover:text-blue-800">
+          {match[1]}
+        </a>
+      );
+    } else if (match[2]) {
+      result.push(<strong key={`b${match.index}`}>{match[2]}</strong>);
+    } else if (match[3]) {
+      result.push(<em key={`i${match.index}`}>{match[3]}</em>);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    result.push(<span key={`t${lastIndex}`}>{text.slice(lastIndex)}</span>);
+  }
+
+  return result.length > 0 ? result : [<span key="0">{text}</span>];
 };
 
 export const CopyableField = ({ value, label }) => {
@@ -39,7 +54,7 @@ export const CopyableField = ({ value, label }) => {
   return (
     <div className="flex items-start sm:items-center text-sm text-gray-600 mt-1 min-w-0">
       {label && (<span className="font-medium mr-2 shrink-0">{label}:</span>)}
-      <span className="break-words min-w-0">{renderWithLinks(trimmed)}</span>
+      <span className="break-words min-w-0 whitespace-pre-wrap">{renderRichContent(trimmed)}</span>
       <button
         onClick={handleCopy}
         className={`ml-1 p-1 rounded-full transition-colors duration-200 shrink-0 ${copied ? "bg-green-100" : "hover:bg-gray-200"
