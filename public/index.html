@@ -34,6 +34,12 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- Fallback reload button: visible immediately on F5, hidden once React mounts -->
+    <div id="fallback-reload" style="position:fixed;top:0;left:0;right:0;z-index:10000;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;font:600 13px/1.4 system-ui,sans-serif;">
+      <span>Click to get latest update</span>
+      <button onclick="location.reload(true)" style="background:#fff;color:#4f46e5;border:none;border-radius:6px;padding:4px 14px;font:600 13px/1.4 system-ui,sans-serif;cursor:pointer;">Reload</button>
+    </div>
+    <script>setTimeout(function(){var e=document.getElementById('fallback-reload');if(e)e.style.display='none';},5000);</script>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
